@@ -1,0 +1,13 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: eureka-consumer
+eureka:
+  instance:
+    instance-id: eureka-consumer
+  client:
+    service-url:
+      defaultZone: http://eureka-center-01:8081/eureka/
+    fetch-registry: true
+    register-with-eureka: true

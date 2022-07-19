@@ -1,0 +1,22 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: login-server
+  data:
+    mongodb:
+      host: mongo.picpic.site
+      username: ktright
+      password: DhZkf6tAExrCTPcG
+      database: ktright
+
+eureka:
+  instance:
+    instance-id: login-server
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://eureka-center-01:8081/eureka/
+    fetch-registry: true
+    register-with-eureka: true
