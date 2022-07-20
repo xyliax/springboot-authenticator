@@ -19,6 +19,6 @@ public class UserService {
         Query query = new Query();
         query.addCriteria(Criteria.where("username").is(user.getUsername()));
         List<User> list = mongoTemplate.find(query, User.class);
-        return list.get(0).toString();
+        return list.get(0).toString() + "???" + list.get(0).getUserId();
     }
 }
