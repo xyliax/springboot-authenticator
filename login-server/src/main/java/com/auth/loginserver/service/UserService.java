@@ -1,24 +1,40 @@
 package com.auth.loginserver.service;
 
+import com.auth.loginserver.dao.UserRepository;
+import com.auth.model.Cause;
 import com.auth.model.User;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
     @Resource
-    private MongoTemplate mongoTemplate;
+    private UserRepository userRepository;
 
     public String userRegister(User user) {
-        mongoTemplate.save(user);
-        Query query = new Query();
-        query.addCriteria(Criteria.where("username").is(user.getUsername()));
-        List<User> list = mongoTemplate.find(query, User.class);
-        return list.get(0).toString() + "???" + list.get(0).getUserId();
+        try {
+            User newUser = userRepository.createUser(user);
+            return newUser.getUserId();
+        } catch (DuplicateKeyException duplicateKeyException) {
+            return Cause.DUP_NAME.code;
+        } catch (RuntimeException runtimeException) {
+            return Cause.UNKNOWN.code;
+        }
+    }
+
+    public String userLogin(User user) {
+        try {
+            User resUser = userRepository.readUser(user);
+            if (Objects.equals(user.getPassword(), resUser.getPassword()))
+                return resUser.getEncryptD();
+            else return Cause.MISMATCH.code;
+        } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
+            return Cause.NO_RESULT.code;
+        } catch (RuntimeException runtimeException) {
+            return Cause.UNKNOWN.code;
+        }
     }
 }
