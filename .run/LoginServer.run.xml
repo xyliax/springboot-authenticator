@@ -2,10 +2,9 @@
     <configuration default="false" name="LoginServer" type="SpringBootApplicationConfigurationType"
                    factoryName="Spring Boot">
         <option name="ACTIVE_PROFILES"/>
-        <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
         <option name="HIDE_BANNER" value="true"/>
         <module name="login-server"/>
-        <option name="SPRING_BOOT_MAIN_CLASS" value="com.auth.loginserver.LoginServer"/>
+        <option name="SPRING_BOOT_MAIN_CLASS" value="com.auth.LoginServer"/>
         <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
         <method v="2">
             <option name="Make" enabled="true"/>

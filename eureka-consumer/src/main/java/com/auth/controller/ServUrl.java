@@ -1,4 +1,4 @@
-package com.auth.eurekaconsumer.controller;
+package com.auth.controller;
 
 public enum ServUrl {
     LOGIN("login-server"),

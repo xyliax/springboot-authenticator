@@ -9,15 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>eureka-consumer</artifactId>
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>auth</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${authenticator.version}</version>
         </dependency>
     </dependencies>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
 </project>

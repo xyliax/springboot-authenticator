@@ -1,8 +1,8 @@
-package com.auth.loginserver.controller;
+package com.auth.controller;
 
-import com.auth.loginserver.service.UserService;
 import com.auth.model.ServiceSegment;
 import com.auth.model.User;
+import com.auth.service.UserService;
 import com.auth.utilities.InfoWrapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +30,4 @@ public class UserController {
         ServiceSegment info = userService.userLogin(user, type);
         return stringInfoWrapper.wrap(info);
     }
-
 }

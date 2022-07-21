@@ -1,6 +1,6 @@
-package com.auth.loginserver.service;
+package com.auth.service;
 
-import com.auth.loginserver.dao.UserRepository;
+import com.auth.dao.UserRepository;
 import com.auth.model.Cause;
 import com.auth.model.ServiceSegment;
 import com.auth.model.User;

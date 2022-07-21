@@ -21,4 +21,5 @@ public class User {
     private String publicKy;
     private String password;
     private String encryptD;
+    private String userRole;
 }

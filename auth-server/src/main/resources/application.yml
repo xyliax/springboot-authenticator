@@ -1,15 +1,13 @@
 server:
-  port: 7001
-
+  port: 7002
 spring:
   application:
-    name: login-server
+    name: auth-server
   profiles:
     active: mongo
-
 eureka:
   instance:
-    instance-id: login-server
+    instance-id: auth-server
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 5
   client:

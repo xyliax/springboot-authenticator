@@ -2,10 +2,9 @@
     <configuration default="false" name="EurekaConsumer" type="SpringBootApplicationConfigurationType"
                    factoryName="Spring Boot">
         <option name="ACTIVE_PROFILES"/>
-        <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
         <option name="HIDE_BANNER" value="true"/>
         <module name="eureka-consumer"/>
-        <option name="SPRING_BOOT_MAIN_CLASS" value="com.auth.eurekaconsumer.EurekaConsumer"/>
+        <option name="SPRING_BOOT_MAIN_CLASS" value="com.auth.EurekaConsumer"/>
         <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
         <method v="2">
             <option name="Make" enabled="true"/>

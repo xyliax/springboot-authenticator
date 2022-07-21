@@ -1,4 +1,4 @@
-package com.auth.loginserver.dao;
+package com.auth.dao;
 
 import com.auth.model.User;
 import org.bson.codecs.ObjectIdGenerator;

@@ -1,8 +1,12 @@
 server:
   port: 8080
+
 spring:
   application:
     name: eureka-consumer
+  profiles:
+    active: mongo
+
 eureka:
   instance:
     instance-id: eureka-consumer

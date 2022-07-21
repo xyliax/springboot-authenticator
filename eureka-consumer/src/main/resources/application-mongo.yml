@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      host: mongo.picpic.site
+      port: 27017
+      username: ktright
+      password: DhZkf6tAExrCTPcG
+      database: ktright
+      auto-index-creation: true

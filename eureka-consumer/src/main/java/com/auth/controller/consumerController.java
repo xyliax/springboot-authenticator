@@ -1,4 +1,4 @@
-package com.auth.eurekaconsumer.controller;
+package com.auth.controller;
 
 
 import com.auth.model.User;

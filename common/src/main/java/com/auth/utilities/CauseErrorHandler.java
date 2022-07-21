@@ -1,9 +1,11 @@
 package com.auth.utilities;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
-public class CauseHandler extends DefaultResponseErrorHandler {
+@Configuration
+public class CauseErrorHandler extends DefaultResponseErrorHandler {
     @Override
     public boolean hasError(ClientHttpResponse response) {
         return false;
@@ -11,6 +13,5 @@ public class CauseHandler extends DefaultResponseErrorHandler {
 
     @Override
     public void handleError(ClientHttpResponse response) {
-
     }
 }
