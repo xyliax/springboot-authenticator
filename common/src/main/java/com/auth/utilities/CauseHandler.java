@@ -1,4 +1,4 @@
-package com.auth.model;
+package com.auth.utilities;
 
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;

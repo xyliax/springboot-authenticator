@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 7001
 
 spring:
   application:
@@ -20,6 +20,6 @@ eureka:
     lease-renewal-interval-in-seconds: 5
   client:
     service-url:
-      defaultZone: http://eureka-center-01:8081/eureka/
+      defaultZone: http://eureka-center-01:8761/eureka/
     fetch-registry: true
     register-with-eureka: true

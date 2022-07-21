@@ -1,7 +1,7 @@
 package com.auth.eurekaconsumer;
 
 import com.auth.eurekaconsumer.config.LoadBalanceConfig;
-import com.auth.model.CauseHandler;
+import com.auth.utilities.CauseHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

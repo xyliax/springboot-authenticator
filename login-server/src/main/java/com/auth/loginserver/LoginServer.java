@@ -1,6 +1,6 @@
 package com.auth.loginserver;
 
-import com.auth.model.InfoWrapper;
+import com.auth.utilities.InfoWrapper;
 import org.bson.codecs.ObjectIdGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,8 +20,8 @@ public class LoginServer {
         return new ObjectIdGenerator();
     }
 
-    @Bean(name = "stringInfoWrapper")
+    @Bean
     InfoWrapper<String> stringInfoWrapper() {
-        return new InfoWrapper<>();
+        return new InfoWrapper<>(String.class);
     }
 }

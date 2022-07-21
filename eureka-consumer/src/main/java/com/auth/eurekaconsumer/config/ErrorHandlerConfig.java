@@ -1,6 +1,6 @@
 package com.auth.eurekaconsumer.config;
 
-import com.auth.model.CauseHandler;
+import com.auth.utilities.CauseHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 

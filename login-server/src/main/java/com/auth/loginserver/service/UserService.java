@@ -2,8 +2,10 @@ package com.auth.loginserver.service;
 
 import com.auth.loginserver.dao.UserRepository;
 import com.auth.model.Cause;
+import com.auth.model.ServiceSegment;
 import com.auth.model.User;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -14,27 +16,30 @@ public class UserService {
     @Resource
     private UserRepository userRepository;
 
-    public String userRegister(User user) {
+    public ServiceSegment userRegister(User user) {
         try {
             User newUser = userRepository.createUser(user);
-            return newUser.getUserId();
+            return new ServiceSegment(newUser.getUserId());
         } catch (DuplicateKeyException duplicateKeyException) {
-            return Cause.DUP_NAME.code;
+            return new ServiceSegment(Cause.NO_RESULT);
         } catch (RuntimeException runtimeException) {
-            return Cause.UNKNOWN.code;
+            return new ServiceSegment(Cause.UNKNOWN);
         }
     }
 
-    public String userLogin(User user) {
+    public ServiceSegment userLogin(User user, @Nullable String type) {
         try {
             User resUser = userRepository.readUser(user);
-            if (Objects.equals(user.getPassword(), resUser.getPassword()))
-                return resUser.getEncryptD();
-            else return Cause.MISMATCH.code;
+            if (type == null || type.equals("username")) {
+                if (Objects.equals(user.getPassword(), resUser.getPassword()))
+                    return new ServiceSegment(user.getEncryptD());
+                else
+                    return new ServiceSegment(Cause.MISMATCH);
+            } else return new ServiceSegment(Cause.UNDEF_ARG);
         } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
-            return Cause.NO_RESULT.code;
+            return new ServiceSegment(Cause.NO_RESULT);
         } catch (RuntimeException runtimeException) {
-            return Cause.UNKNOWN.code;
+            return new ServiceSegment(Cause.UNKNOWN);
         }
     }
 }

@@ -6,8 +6,10 @@ spring:
 eureka:
   instance:
     instance-id: eureka-consumer
+    lease-renewal-interval-in-seconds: 15
   client:
     service-url:
-      defaultZone: http://eureka-center-01:8081/eureka/
+      defaultZone: http://eureka-center-01:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
+    registry-fetch-interval-seconds: 15
