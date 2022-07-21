@@ -1,7 +1,9 @@
 package com.auth.loginserver.controller;
 
 import com.auth.loginserver.service.UserService;
+import com.auth.model.InfoWrapper;
 import com.auth.model.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,14 +16,19 @@ import javax.annotation.Resource;
 public class UserController {
     @Resource
     private UserService userService;
+    @Resource(name = "stringInfoWrapper")
+    private InfoWrapper<String> stringInfoWrapper;
 
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        return userService.userRegister(user);
+    public ResponseEntity<String> register(@RequestBody User user) {
+        String info = userService.userRegister(user);
+        return stringInfoWrapper.wrap(info);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        return userService.userLogin(user);
+    public ResponseEntity<String> login(@RequestBody User user) {
+        String info = userService.userLogin(user);
+        return stringInfoWrapper.wrap(info);
     }
+
 }

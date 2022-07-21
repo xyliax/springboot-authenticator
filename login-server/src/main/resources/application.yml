@@ -17,6 +17,7 @@ eureka:
   instance:
     instance-id: login-server
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
   client:
     service-url:
       defaultZone: http://eureka-center-01:8081/eureka/

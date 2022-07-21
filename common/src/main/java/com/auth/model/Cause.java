@@ -13,7 +13,9 @@ public enum Cause {
         this.code = prefix + code;
     }
 
-    public static boolean isCause(String code) {
-        return code != null && code.startsWith(prefix);
+    public static boolean isCause(Object code) {
+        if (!(code instanceof String))
+            return false;
+        return ((String) code).startsWith(prefix);
     }
 }

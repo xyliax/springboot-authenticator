@@ -1,4 +1,4 @@
-package com.auth.config;
+package com.auth.eurekaconsumer.config;
 
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer;
@@ -18,4 +18,5 @@ public class LoadBalanceConfig {
                 .getLazyProvider(name, ServiceInstanceListSupplier.class),
                 name);
     }
+
 }

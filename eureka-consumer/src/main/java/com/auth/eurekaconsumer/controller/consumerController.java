@@ -1,10 +1,7 @@
 package com.auth.eurekaconsumer.controller;
 
 
-import com.auth.eurekaconsumer.ServUrl;
-import com.auth.model.Cause;
 import com.auth.model.User;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,18 +20,13 @@ public class consumerController {
     public ResponseEntity<String> registerAtLoginServer
             (@RequestBody User user) {
         String url = ServUrl.LOGIN.url + "/user/register";
-        String info = restTemplate.postForObject(url, user, String.class);
-        HttpStatus status = Cause.isCause(info) ?
-                HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK;
-        return new ResponseEntity<>(info, status);
+        return restTemplate.postForEntity(url, user, String.class);
     }
 
     @PostMapping("/login-server/user")
-    public ResponseEntity<String> loginAtLoginServer(@RequestBody User user) {
+    public ResponseEntity<String> loginAtLoginServer
+            (@RequestBody User user) {
         String url = ServUrl.LOGIN.url + "/user/login";
-        String info = restTemplate.postForObject(url, user, String.class);
-        HttpStatus status = Cause.isCause(info) ?
-                HttpStatus.NOT_ACCEPTABLE : HttpStatus.OK;
-        return new ResponseEntity<>(info, status);
+        return restTemplate.postForEntity(url, user, String.class);
     }
 }
