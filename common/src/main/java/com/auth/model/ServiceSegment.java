@@ -10,7 +10,7 @@ public class ServiceSegment {
     private Object content;
 
     public ServiceSegment(Cause cause) {
-        this(cause, "#Check Response Header#");
+        this(cause, null);
     }
 
     public ServiceSegment(Object content) {

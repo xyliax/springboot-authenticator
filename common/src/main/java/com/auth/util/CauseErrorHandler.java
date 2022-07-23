@@ -1,4 +1,4 @@
-package com.auth.utilities;
+package com.auth.util;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpResponse;

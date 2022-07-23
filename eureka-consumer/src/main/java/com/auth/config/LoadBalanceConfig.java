@@ -20,5 +20,4 @@ public class LoadBalanceConfig {
                 .getLazyProvider(name, ServiceInstanceListSupplier.class),
                 name);
     }
-
 }

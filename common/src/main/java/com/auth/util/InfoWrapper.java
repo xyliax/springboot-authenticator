@@ -1,4 +1,4 @@
-package com.auth.utilities;
+package com.auth.util;
 
 import com.auth.model.Cause;
 import com.auth.model.ServiceSegment;

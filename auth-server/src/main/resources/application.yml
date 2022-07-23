@@ -1,10 +1,12 @@
 server:
   port: 7002
+
 spring:
   application:
     name: auth-server
   profiles:
     active: mongo
+
 eureka:
   instance:
     instance-id: auth-server

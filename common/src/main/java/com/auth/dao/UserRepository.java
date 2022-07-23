@@ -22,10 +22,15 @@ public class UserRepository {
         return mongoTemplate.insert(user);
     }
 
-    public User readUser(User user) {
-        Query query = new Query(Criteria.
-                where("username").is(user.getUsername()));
+    public User readUserByName(String username) {
+        Query query = new Query(Criteria.where("username").is(username));
         List<User> list = mongoTemplate.find(query, User.class);
-        return list.get(0);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    public User readUserById(String userId) {
+        Query query = new Query(Criteria.where("userId").is(userId));
+        List<User> list = mongoTemplate.find(query, User.class);
+        return list.isEmpty() ? null : list.get(0);
     }
 }
