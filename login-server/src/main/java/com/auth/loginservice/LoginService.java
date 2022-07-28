@@ -1,7 +1,7 @@
 package com.auth.loginservice;
 
-import com.auth.dao.UserRepository;
-import com.auth.model.Cause;
+import com.auth.dao.MongoRepository;
+import com.auth.defenum.Cause;
 import com.auth.model.ServiceSegment;
 import com.auth.model.User;
 import org.springframework.dao.DuplicateKeyException;
@@ -11,13 +11,13 @@ import javax.annotation.Resource;
 import java.util.Objects;
 
 @Service
-public class UserService {
+public class LoginService {
     @Resource
-    private UserRepository userRepository;
+    private MongoRepository mongoRepository;
 
     public ServiceSegment userRegister(User user) {
         try {
-            User newUser = userRepository.createUser(user);
+            User newUser = mongoRepository.createUser(user);
             return new ServiceSegment(newUser.getUserId());
         } catch (DuplicateKeyException duplicateKeyException) {
             return new ServiceSegment(Cause.DUP_NAME);
@@ -31,7 +31,7 @@ public class UserService {
             User resUser;
             switch (type) {
                 case "username":
-                    resUser = userRepository.readUserByName(username);
+                    resUser = mongoRepository.readUserByName(username);
                     break;
                 case "other":
 

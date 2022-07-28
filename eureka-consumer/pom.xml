@@ -15,6 +15,16 @@
             <artifactId>common</artifactId>
             <version>${authenticator.version}</version>
         </dependency>
+        <dependency>
+            <groupId>auth</groupId>
+            <artifactId>login-server</artifactId>
+            <version>${authenticator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>auth</groupId>
+            <artifactId>auth-server</artifactId>
+            <version>${authenticator.version}</version>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

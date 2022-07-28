@@ -15,11 +15,6 @@
             <artifactId>common</artifactId>
             <version>${authenticator.version}</version>
         </dependency>
-        <dependency>
-            <groupId>auth</groupId>
-            <artifactId>eureka-consumer</artifactId>
-            <version>${authenticator.version}</version>
-        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

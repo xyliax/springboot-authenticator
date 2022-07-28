@@ -1,4 +1,4 @@
-package com.auth.model;
+package com.auth.defenum;
 
 public enum Cause {
     SUCCESS("checked"),

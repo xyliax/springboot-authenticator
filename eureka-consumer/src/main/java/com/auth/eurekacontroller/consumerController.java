@@ -1,7 +1,8 @@
 package com.auth.eurekacontroller;
 
-
+import com.auth.authcontroller.AuthServerController;
 import com.auth.model.User;
+import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -38,5 +39,32 @@ public class consumerController {
             @RequestParam("identifier") String identifier) {
         String url = ServUrl.AUTH.url + "/user?type={?}&identifier={?}";
         return restTemplate.getForEntity(url, User.class, type, identifier);
+    }
+
+    /**
+     * @param role
+     * @param courseId
+     */
+    @GetMapping("/auth-server/user-list")
+    public ResponseEntity<User[]> getUserList(
+            @RequestParam("role") String role,
+            @RequestParam("course") String courseId) {
+        String url = ServUrl.AUTH.url + "/user-list?role={?}&course={?}";
+        return restTemplate.getForEntity(url, User[].class, role, courseId);
+    }
+
+    /**
+     * @param role
+     * @param action
+     * @param idPair
+     * @see AuthServerController#assign(String, Boolean, Pair)
+     */
+    @PostMapping("/auth-server/auth")
+    public ResponseEntity<String> assignAuth(
+            @RequestParam("role") String role,
+            @RequestParam("action") Boolean action,
+            @RequestBody Pair<String, String> idPair) {
+        String url = ServUrl.AUTH.url + "/edit/auth?action={?}";
+        return restTemplate.postForEntity(url, idPair, String.class, role, action);
     }
 }

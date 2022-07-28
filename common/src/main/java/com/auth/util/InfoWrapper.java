@@ -1,6 +1,6 @@
 package com.auth.util;
 
-import com.auth.model.Cause;
+import com.auth.defenum.Cause;
 import com.auth.model.ServiceSegment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

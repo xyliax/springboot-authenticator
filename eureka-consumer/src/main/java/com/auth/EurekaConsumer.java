@@ -1,10 +1,7 @@
 package com.auth;
 
 import com.auth.config.LoadBalanceConfig;
-import com.auth.model.User;
 import com.auth.util.CauseErrorHandler;
-import com.auth.util.InfoWrapper;
-import org.bson.codecs.ObjectIdGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -36,21 +33,5 @@ public class EurekaConsumer {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(causeHandler);
         return restTemplate;
-    }
-
-    @Bean
-    ObjectIdGenerator objectIdGenerator() {
-        //mongoDB的未知问题，无法通过@Id自动生成_id，手动配置
-        return new ObjectIdGenerator();
-    }
-
-    @Bean
-    InfoWrapper<String> stringInfoWrapper() {
-        return new InfoWrapper<>(String.class);
-    }
-
-    @Bean
-    InfoWrapper<User> userInfoWrapper() {
-        return new InfoWrapper<>(User.class);
     }
 }

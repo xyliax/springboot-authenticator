@@ -1,5 +1,6 @@
 package com.auth.model;
 
+import com.auth.defenum.Cause;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
