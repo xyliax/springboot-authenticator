@@ -9,6 +9,7 @@
         <module>common</module>
         <module>eureka-consumer</module>
         <module>auth-server</module>
+        <module>content-server</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

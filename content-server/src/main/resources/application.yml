@@ -1,24 +1,20 @@
 server:
-  port: 8080
+  port: 7003
 
 spring:
   application:
-    name: eureka-consumer
+    name: content-server
   profiles:
     active: mongo
-  servlet:
-    multipart:
-      max-file-size: 1GB
-      max-request-size: 1GB
 
 eureka:
   instance:
-    instance-id: eureka-consumer
+    instance-id: content-server
+    prefer-ip-address: true
     lease-renewal-interval-in-seconds: 5
   client:
     service-url:
       defaultZone: http://eureka-center-01:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
-    registry-fetch-interval-seconds: 5
     instance-info-replication-interval-seconds: 5

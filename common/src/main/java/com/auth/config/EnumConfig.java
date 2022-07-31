@@ -71,4 +71,3 @@ class RoleWritingConverter implements Converter<Role, String> {
         else return role.toString();
     }
 }
-

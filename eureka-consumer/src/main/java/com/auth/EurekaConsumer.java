@@ -17,7 +17,8 @@ import javax.annotation.Resource;
 @EnableDiscoveryClient
 @LoadBalancerClients({
         @LoadBalancerClient(name = "login-server", configuration = LoadBalanceConfig.class),
-        @LoadBalancerClient(name = "auth-server", configuration = LoadBalanceConfig.class)}
+        @LoadBalancerClient(name = "auth-server", configuration = LoadBalanceConfig.class),
+        @LoadBalancerClient(name = "content-server", configuration = LoadBalanceConfig.class)}
 )
 public class EurekaConsumer {
     public static void main(String[] args) {

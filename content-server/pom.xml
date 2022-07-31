@@ -8,31 +8,17 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>eureka-consumer</artifactId>
+    <artifactId>content-server</artifactId>
     <dependencies>
         <dependency>
             <groupId>auth</groupId>
             <artifactId>common</artifactId>
             <version>${authenticator.version}</version>
         </dependency>
-        <dependency>
-            <groupId>auth</groupId>
-            <artifactId>login-server</artifactId>
-            <version>${authenticator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>auth</groupId>
-            <artifactId>auth-server</artifactId>
-            <version>${authenticator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>auth</groupId>
-            <artifactId>content-server</artifactId>
-            <version>${authenticator.version}</version>
-        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>

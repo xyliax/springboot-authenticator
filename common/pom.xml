@@ -14,6 +14,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.sirayan.genericdb-mongo</groupId>
+            <artifactId>generic-db</artifactId>
+            <version>0.0.3</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

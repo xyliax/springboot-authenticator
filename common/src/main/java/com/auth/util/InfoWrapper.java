@@ -6,14 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class InfoWrapper<T> {
-    private final Class<T> tClass;
-
-    public InfoWrapper(Class<T> tClass) {
-        this.tClass = tClass;
-    }
-
-    public ResponseEntity<T> wrap(ServiceSegment segment) {
+public class InfoWrapper {
+    public <T> ResponseEntity<T> wrap(ServiceSegment segment, Class<T> tClass) {
         Cause cause = segment.getCause();
         Object content = segment.getContent();
         HttpStatus status = Cause.isFailure(cause) ?

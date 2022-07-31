@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="ContentServer" type="SpringBootApplicationConfigurationType"
+                   factoryName="Spring Boot">
+        <option name="ACTIVE_PROFILES"/>
+        <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
+        <option name="HIDE_BANNER" value="true"/>
+        <module name="content-server"/>
+        <option name="SPRING_BOOT_MAIN_CLASS" value="com.auth.ContentServer"/>
+        <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

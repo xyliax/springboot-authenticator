@@ -39,7 +39,7 @@ public class AuthService {
     }
 
     public ServiceSegment assignAuth(String userId, String courseId,
-                                     String role, boolean action) {
+                                     String role, Boolean action) {
         try {
             User user = mongoRepository.readUserById(userId);
             Course course = mongoRepository.readCourseById(courseId);
@@ -51,6 +51,8 @@ public class AuthService {
             else
                 stat = user.delPermission(Role.valueOf(role), courseId);
             return new ServiceSegment(Boolean.toString(stat));
+        } catch (IllegalArgumentException illegalArgumentException) {
+            return new ServiceSegment(Cause.UNDEF_ARG);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }
