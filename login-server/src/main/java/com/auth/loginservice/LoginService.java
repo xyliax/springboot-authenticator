@@ -2,8 +2,8 @@ package com.auth.loginservice;
 
 import com.auth.dao.MongoRepository;
 import com.auth.defenum.Cause;
-import com.auth.model.ServiceSegment;
 import com.auth.model.User;
+import com.auth.util.ServiceSegment;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 

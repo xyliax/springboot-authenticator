@@ -1,6 +1,6 @@
 package com.auth;
 
-import com.auth.config.LoadBalanceConfig;
+import com.auth.config.LoadBalancerConfig;
 import com.auth.util.CauseErrorHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,9 +16,9 @@ import javax.annotation.Resource;
 @SpringBootApplication
 @EnableDiscoveryClient
 @LoadBalancerClients({
-        @LoadBalancerClient(name = "login-server", configuration = LoadBalanceConfig.class),
-        @LoadBalancerClient(name = "auth-server", configuration = LoadBalanceConfig.class),
-        @LoadBalancerClient(name = "content-server", configuration = LoadBalanceConfig.class)}
+        @LoadBalancerClient(name = "login-server", configuration = LoadBalancerConfig.class),
+        @LoadBalancerClient(name = "auth-server", configuration = LoadBalancerConfig.class),
+        @LoadBalancerClient(name = "content-server", configuration = LoadBalancerConfig.class)}
 )
 public class EurekaConsumer {
     public static void main(String[] args) {

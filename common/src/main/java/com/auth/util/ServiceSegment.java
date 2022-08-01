@@ -1,4 +1,4 @@
-package com.auth.model;
+package com.auth.util;
 
 import com.auth.defenum.Cause;
 import lombok.AllArgsConstructor;

@@ -4,8 +4,8 @@ import com.auth.dao.MongoRepository;
 import com.auth.defenum.Cause;
 import com.auth.defenum.Role;
 import com.auth.model.Course;
-import com.auth.model.ServiceSegment;
 import com.auth.model.User;
+import com.auth.util.ServiceSegment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -80,7 +80,7 @@ public class AuthService {
             Course course = mongoRepository.readCourseById(courseId);
             List<User> userList = mongoRepository.readUserAll();
             Role role = Role.valueOf(roleStr);
-            if (!Course.isValid(course))
+            if (Course.invalid(course))
                 return new ServiceSegment(Cause.NO_RESULT);
             List<User> resList = new ArrayList<>();
             userList.forEach(user -> {

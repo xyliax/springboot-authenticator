@@ -8,10 +8,8 @@ spring:
 eureka:
   instance:
     hostname: eureka-center-01
-    lease-renewal-interval-in-seconds: 5
   client:
     service-url:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
     fetch-registry: false
     register-with-eureka: false
-    instance-info-replication-interval-seconds: 5

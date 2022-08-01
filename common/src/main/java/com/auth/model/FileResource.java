@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseFile {
-    private String fileId;
-    private String courseId;
-    private String fileName;
+public class FileResource {
+    private String filename;
+    private long size;
+    private String contentType;
+    private byte[] bytes;
     private String description;
-    private String path;
 }

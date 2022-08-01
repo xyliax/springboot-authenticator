@@ -1,9 +1,9 @@
 package com.auth.logincontroller;
 
 import com.auth.loginservice.LoginService;
-import com.auth.model.ServiceSegment;
 import com.auth.model.User;
 import com.auth.util.InfoWrapper;
+import com.auth.util.ServiceSegment;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

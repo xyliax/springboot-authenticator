@@ -1,7 +1,9 @@
 package com.auth.eurekacontroller;
 
 import com.auth.authcontroller.AuthServerController;
+import com.auth.contentcontroller.ContentServerController;
 import com.auth.logincontroller.LoginServerController;
+import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.model.User;
 import lombok.SneakyThrows;
@@ -11,7 +13,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
+
+import static com.auth.config.FileMappingConfig.FILE_MAPPING_PATH_PREFIX;
+import static com.auth.config.FileMappingConfig.FILE_REAL_PATH;
 
 @RestController
 @RequestMapping
@@ -88,16 +96,21 @@ public class consumerController {
         return restTemplate.postForEntity(url, idMap, String.class, role, action);
     }
 
-    @SneakyThrows
-    @PostMapping(path = "/content-server/file/upload")
-    public ResponseEntity<String> uploadFile(
-            @RequestParam("course") String courseId,
-            @RequestPart("file") MultipartFile multipartFile) {
+    private static String getTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.
+                ofPattern("yyyyMMddHHmmss"));
+    }
 
-        String url = ServUrl.CONTENT.url + "/file/upload?course={?}";
-        String description = "This is a file!";
-        CourseFile courseFile = new CourseFile(multipartFile, description);
-        return restTemplate.postForEntity(url, courseFile, String.class, courseId);
+    /**
+     * @param course
+     * @see ContentServerController#course(Course)
+     */
+    @PutMapping(path = "/content-server/course")
+    public ResponseEntity<String> createCourse(
+            @RequestBody Course course) {
+
+        String url = ServUrl.CONTENT.url + "/course";
+        return restTemplate.postForEntity(url, course, String.class);
     }
 
     @GetMapping(path = "/content-server/file/download")
@@ -106,5 +119,31 @@ public class consumerController {
 
         String url = ServUrl.CONTENT.url + "/file/download?file={?}";
         return restTemplate.getForEntity(url, CourseFile.class, fileId);
+    }
+
+    /**
+     * @param courseId
+     * @param description
+     * @param multipartFile
+     * @see ContentServerController#upload(CourseFile)
+     */
+    @SneakyThrows
+    @PostMapping(path = "/content-server/file/upload")
+    public ResponseEntity<String> uploadFile(
+            @RequestParam("course") String courseId,
+            @RequestPart("description") String description,
+            @RequestPart("file") MultipartFile multipartFile) {
+
+        String url = ServUrl.CONTENT.url + "/file/upload";
+        File fileRealPath = new File(FILE_REAL_PATH);
+        if (!fileRealPath.exists())
+            if (!fileRealPath.mkdirs())
+                return null;
+        String fileName = multipartFile.getOriginalFilename();
+        String newFileName = getTime() + "_" + fileName;
+        multipartFile.transferTo(new File(fileRealPath, newFileName));
+        CourseFile courseFile = new CourseFile(null, courseId, fileName,
+                description, FILE_MAPPING_PATH_PREFIX + newFileName);
+        return restTemplate.postForEntity(url, courseFile, String.class);
     }
 }

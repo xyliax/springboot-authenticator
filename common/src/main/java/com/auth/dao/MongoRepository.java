@@ -9,18 +9,16 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class MongoRepository {
     @Resource
     private MongoTemplate mongoTemplate;
-    @Resource
-    private GridFsTemplate gridFsTemplate;
     @Resource
     private ObjectIdGenerator objectIdGenerator;
 
@@ -32,8 +30,7 @@ public class MongoRepository {
     }
 
     public User readUserById(String userId) {
-        Query query = new Query(Criteria.where("userId").is(userId));
-        return mongoTemplate.findOne(query, User.class, "USERS");
+        return mongoTemplate.findById(userId, User.class, "USERS");
     }
 
     public User readUserByName(String username) {
@@ -58,12 +55,13 @@ public class MongoRepository {
     public Course createCourse(Course course) {
         String courseId = objectIdGenerator.generate().toString();
         course.setCourseId(courseId);
+        course.setValid(true);
+        course.setCourseFile(new ArrayList<>());
         return mongoTemplate.insert(course, "COURSES");
     }
 
     public Course readCourseById(String courseId) {
-        Query query = new Query(Criteria.where("courseId").is(courseId));
-        return mongoTemplate.findOne(query, Course.class, "COURSES");
+        return mongoTemplate.findById(courseId, Course.class, "COURSES");
     }
 
     public List<Course> readCourseByName(String courseName) {
@@ -78,15 +76,13 @@ public class MongoRepository {
                 "COURSES").wasAcknowledged();
     }
 
-    //Course File
-    public CourseFile createCourseFile(CourseFile courseFile) {
-        String fileId = objectIdGenerator.generate().toString();
-        courseFile.setFileId(fileId);
-        return mongoTemplate.insert(courseFile, "FILES");
-    }
-
-    public CourseFile readFileByFileId(String fileId) {
-        Query query = new Query(Criteria.where("fileId").is(fileId));
-        return mongoTemplate.findOne(query, CourseFile.class, "FILES");
+    public String createCourseFile(CourseFile courseFile) {
+        Course course = readCourseById(courseFile.getCourseId());
+        if (course == null)
+            return null;
+        course.addFile(courseFile.getFileId(), courseFile.getFileName(),
+                courseFile.getDescription(), courseFile.getPath());
+        mongoTemplate.save(course, "COURSES");
+        return courseFile.getPath();
     }
 }
