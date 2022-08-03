@@ -77,15 +77,4 @@ public class ContentService {
             return new ServiceSegment(Cause.UNKNOWN);
         }
     }
-
-    public ServiceSegment downloadCourseFile(String fileId) {
-        try {
-            CourseFile courseFile = localFileRepository.readFileByFileId(fileId);
-            if (courseFile == null)
-                return new ServiceSegment(Cause.NO_RESULT);
-            return new ServiceSegment(courseFile);
-        } catch (RuntimeException runtimeException) {
-            return new ServiceSegment(Cause.UNKNOWN);
-        }
-    }
 }

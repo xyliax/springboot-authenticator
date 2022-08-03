@@ -2,6 +2,7 @@ package com.auth.eurekacontroller;
 
 import com.auth.authcontroller.AuthServerController;
 import com.auth.contentcontroller.ContentServerController;
+import com.auth.defenum.Role;
 import com.auth.logincontroller.LoginServerController;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
@@ -73,9 +74,10 @@ public class consumerController {
     }
 
     /**
-     * Get an array of Users having a Role for a Course
-     * @param roleGroup Role.toString(), "*" means "all"
+     * Get an array of Users having a Role for a Course. <br> roleGroup and courseId can be either all "*" or no "*"
+     * @param roleGroup "viewer" or "editor", "*" means "all"
      * @param courseId  courseId, "*" means "all"
+     * @see Role
      * @see AuthServerController#userList(String, String)
      */
     @GetMapping(path = "/auth-server/user-list")
@@ -143,16 +145,8 @@ public class consumerController {
     public ResponseEntity<Course[]> getCourseList(
             @RequestParam("userId") String userId) {
 
-        String url = ServUrl.CONTENT.url + "/course/course-list/user={?}";
+        String url = ServUrl.CONTENT.url + "/course/course-list?user={?}";
         return restTemplate.getForEntity(url, Course[].class, userId);
-    }
-
-    @GetMapping(path = "/content-server/file/download")
-    public ResponseEntity<CourseFile> downloadFile(
-            @RequestParam("fileId") String fileId) {
-
-        String url = ServUrl.CONTENT.url + "/file/download?file={?}";
-        return restTemplate.getForEntity(url, CourseFile.class, fileId);
     }
 
     /**

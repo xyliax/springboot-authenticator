@@ -57,12 +57,4 @@ public class ContentServerController {
         ServiceSegment info = contentService.uploadCourseFile(courseFile);
         return infoWrapper.wrap(info, String.class);
     }
-
-    @GetMapping(path = "/file/download")
-    public ResponseEntity<CourseFile> download(
-            @RequestParam("file") String fileId) {
-
-        ServiceSegment info = contentService.downloadCourseFile(fileId);
-        return infoWrapper.wrap(info, CourseFile.class);
-    }
 }

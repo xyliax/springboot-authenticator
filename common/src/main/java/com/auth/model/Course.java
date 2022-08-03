@@ -26,7 +26,7 @@ public class Course {
     private HashMap<String, CourseFile> courseFiles;
 
     public void addFile(CourseFile courseFile) {
-        courseFiles.put(courseFile.getCourseId(), courseFile);
+        courseFiles.put(courseFile.getFileId(), courseFile);
     }
 
     public void delFile(String fileId) {

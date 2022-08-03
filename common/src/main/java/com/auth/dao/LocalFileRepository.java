@@ -18,8 +18,4 @@ public class LocalFileRepository {
         String fileId = objectIdGenerator.generate().toString();
         courseFile.setFileId(fileId);
     }
-
-    public CourseFile readFileByFileId(String fileId) {
-        return null;
-    }
 }
