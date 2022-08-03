@@ -41,6 +41,8 @@ public class MongoRepository {
     }
 
     public User updateUser(User user) {
+        if (readUserById(user.getUserId()) == null)
+            return null;
         return mongoTemplate.save(user, "USERS");
     }
 
@@ -104,12 +106,24 @@ public class MongoRepository {
                 "COURSES").wasAcknowledged();
     }
 
-    public String createCourseFile(CourseFile courseFile) {
+    public CourseFile createCourseFile(CourseFile courseFile) {
         Course course = readCourseById(courseFile.getCourseId());
         if (course == null)
             return null;
         course.addFile(courseFile);
         mongoTemplate.save(course, "COURSES");
-        return courseFile.getPath();
+        return courseFile;
+    }
+
+    public CourseFile deleteCourseFile(String fileId, String courseId) {
+        Course course = readCourseById(courseId);
+        if (course == null)
+            return null;
+        CourseFile courseFile = course.getCourseFiles().get(fileId);
+        HashMap<String, CourseFile> courseFiles = course.getCourseFiles();
+        courseFiles.remove(fileId);
+        course.setCourseFiles(courseFiles);
+        mongoTemplate.save(course, "COURSES");
+        return courseFile;
     }
 }

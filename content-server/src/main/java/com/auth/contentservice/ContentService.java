@@ -22,7 +22,7 @@ public class ContentService {
     public ServiceSegment createCourse(Course course) {
         try {
             Course newCourse = mongoRepository.createCourse(course);
-            return new ServiceSegment(newCourse.getCourseId());
+            return new ServiceSegment(newCourse);
         } catch (DuplicateKeyException duplicateKeyException) {
             return new ServiceSegment(Cause.DUP_NAME);
         } catch (RuntimeException runtimeException) {
@@ -68,11 +68,22 @@ public class ContentService {
 
     public ServiceSegment uploadCourseFile(CourseFile courseFile) {
         try {
-            localFileRepository.createCourseFile(courseFile);
-            String filePath = mongoRepository.createCourseFile(courseFile);
-            if (filePath == null)
+            CourseFile courseFileSaved = mongoRepository.createCourseFile(courseFile);
+            if (courseFileSaved == null)
                 return new ServiceSegment(Cause.UNDEF_ARG);
-            return new ServiceSegment(filePath);
+            return new ServiceSegment(courseFileSaved);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment deleteCourseFile(String fileId, String courseId) {
+        try {
+            CourseFile courseFile = mongoRepository.deleteCourseFile(fileId, courseId);
+            if (courseFile == null)
+                return new ServiceSegment(Cause.UNDEF_ARG);
+            localFileRepository.deleteCourseFile(courseFile);
+            return new ServiceSegment(courseFile);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }

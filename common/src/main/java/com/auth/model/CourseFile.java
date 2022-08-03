@@ -13,4 +13,5 @@ public class CourseFile {
     private String fileName;
     private String fileDescription;
     private String path;
+    private String location;
 }

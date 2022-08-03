@@ -12,21 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 @RestController
+@RequestMapping(value = "/content", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ContentServerController {
     @Resource
     private ContentService contentService;
     @Resource
     private InfoWrapper infoWrapper;
 
-    @PostMapping(path = "/course", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> register(
+    @PostMapping(path = "/course")
+    public ResponseEntity<Course> register(
             @RequestBody Course course) {
 
         ServiceSegment info = contentService.createCourse(course);
-        return infoWrapper.wrap(info, String.class);
+        return infoWrapper.wrap(info, Course.class);
     }
 
-    @GetMapping(path = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/course")
     public ResponseEntity<Course> course(
             @RequestParam("course") String courseId) {
 
@@ -34,7 +35,7 @@ public class ContentServerController {
         return infoWrapper.wrap(info, Course.class);
     }
 
-    @PostMapping(path = "/edit/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/edit/course")
     public ResponseEntity<Course> deleteCourse(
             @RequestParam("course") String courseId) {
 
@@ -42,7 +43,7 @@ public class ContentServerController {
         return infoWrapper.wrap(info, Course.class);
     }
 
-    @GetMapping(path = "/course/course-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/course/course-list")
     public ResponseEntity<Course[]> courseList(
             @RequestParam("user") String userId) {
 
@@ -50,11 +51,20 @@ public class ContentServerController {
         return infoWrapper.wrap(info, Course[].class);
     }
 
-    @PostMapping(path = "/file/upload", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> upload(
+    @PostMapping(path = "/file/upload")
+    public ResponseEntity<CourseFile> upload(
             @RequestBody CourseFile courseFile) {
 
         ServiceSegment info = contentService.uploadCourseFile(courseFile);
-        return infoWrapper.wrap(info, String.class);
+        return infoWrapper.wrap(info, CourseFile.class);
+    }
+
+    @PostMapping(path = "/file/delete")
+    public ResponseEntity<CourseFile> delete(
+            @RequestParam("course") String courseId,
+            @RequestParam("file") String fileId) {
+
+        ServiceSegment info = contentService.deleteCourseFile(fileId, courseId);
+        return infoWrapper.wrap(info, CourseFile.class);
     }
 }

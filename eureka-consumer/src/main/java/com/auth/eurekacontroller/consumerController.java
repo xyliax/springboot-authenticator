@@ -2,34 +2,39 @@ package com.auth.eurekacontroller;
 
 import com.auth.authcontroller.AuthServerController;
 import com.auth.contentcontroller.ContentServerController;
+import com.auth.dao.LocalFileRepository;
 import com.auth.defenum.Role;
 import com.auth.logincontroller.LoginServerController;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.model.User;
-import lombok.SneakyThrows;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
-import static com.auth.config.FileMappingConfig.FILE_MAPPING_PATH_PREFIX;
-import static com.auth.config.FileMappingConfig.FILE_REAL_PATH;
 
 @RestController
 @RequestMapping
 public class consumerController {
     @Resource
     private RestTemplate restTemplate;
+    @Resource
+    private LocalFileRepository localFileRepository;
 
-    private static String getTime() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+    /**
+     * @see LoginServerController#register(boolean, User)
+     */
+    @PutMapping(path = "/login-server/user")
+    public ResponseEntity<User> register(
+            @RequestParam("register") boolean register,
+            @RequestBody User user) {
+
+        String url = ServUrl.LOGIN.url + "/user?register={?}";
+        return restTemplate.postForEntity(url, user, User.class, register);
     }
 
     /**
@@ -37,26 +42,15 @@ public class consumerController {
      * @param idPair {'identifier', password}
      * @see LoginServerController#login(String, String, String)
      */
-    @PostMapping(value = "/login-server/user")
-    public ResponseEntity<String> loginAtLoginServer(
+    @PostMapping(path = "/login-server/user")
+    public ResponseEntity<User> login(
             @RequestHeader("type") String type,
             @RequestBody Map<String, String> idPair) {
 
         String identifier = idPair.get(type);
         String password = idPair.get("password");
         String url = ServUrl.LOGIN.url + "/user?type={?}&identifier={?}&password={?}";
-        return restTemplate.getForEntity(url, String.class, type, identifier, password);
-    }
-
-    /**
-     * @see LoginServerController#register(User)
-     */
-    @PutMapping("/login-server/user")
-    public ResponseEntity<String> registerAtLoginServer(
-            @RequestBody User user) {
-
-        String url = ServUrl.LOGIN.url + "/user";
-        return restTemplate.postForEntity(url, user, String.class);
+        return restTemplate.getForEntity(url, User.class, type, identifier, password);
     }
 
     /**
@@ -74,7 +68,10 @@ public class consumerController {
     }
 
     /**
-     * Get an array of Users having a Role for a Course. <br> roleGroup and courseId can be either all "*" or no "*"
+     * Get an array of Users having a Role for a Course.
+     * <br>
+     * roleGroup and courseId can be either all "*" or no "*"
+     * </br>
      * @param roleGroup "viewer" or "editor", "*" means "all"
      * @param courseId  courseId, "*" means "all"
      * @see Role
@@ -104,15 +101,21 @@ public class consumerController {
         return restTemplate.postForEntity(url, idMap, User.class, userId);
     }
 
+    // TODO: 4/8/2022 分发证书
+//    @PostMapping(path = "/auth-server/cert")
+//    public ResponseEntity<Cert> getCert() {
+//        return null;
+//    }
+
     /**
      * @see ContentServerController#register(Course)
      */
     @PutMapping(path = "/content-server/course")
-    public ResponseEntity<String> createCourse(
+    public ResponseEntity<Course> createCourse(
             @RequestBody Course course) {
 
         String url = ServUrl.CONTENT.url + "/course";
-        return restTemplate.postForEntity(url, course, String.class);
+        return restTemplate.postForEntity(url, course, Course.class);
     }
 
     /**
@@ -153,23 +156,36 @@ public class consumerController {
      * upload & link a CourseFile with a Course
      * @see ContentServerController#upload(CourseFile)
      */
-    @SneakyThrows
-    @PostMapping(path = "/content-server/file/upload")
-    public ResponseEntity<String> uploadFile(
+    @PutMapping(path = "/content-server/file")
+    public ResponseEntity<CourseFile> uploadFile(
             @RequestParam("courseId") String courseId,
             @RequestPart("description") String description,
             @RequestPart("file") MultipartFile multipartFile) {
 
         String url = ServUrl.CONTENT.url + "/file/upload";
-        File fileRealPath = new File(FILE_REAL_PATH);
-        if (!fileRealPath.exists())
-            if (!fileRealPath.mkdirs())
-                return null;
-        String fileName = multipartFile.getOriginalFilename();
-        String newFileName = getTime() + "_" + fileName;
-        multipartFile.transferTo(new File(fileRealPath, newFileName));
-        CourseFile courseFile = new CourseFile(null, courseId, fileName,
-                description, FILE_MAPPING_PATH_PREFIX + newFileName);
-        return restTemplate.postForEntity(url, courseFile, String.class);
+
+        CourseFile courseFile = localFileRepository.createCourseFile(multipartFile, courseId, description);
+        try {
+            ResponseEntity<CourseFile> response = restTemplate.
+                    postForEntity(url, courseFile, CourseFile.class);
+            if (response.getStatusCode() == HttpStatus.NOT_ACCEPTABLE)
+                localFileRepository.deleteCourseFile(courseFile);
+            return response;
+        } catch (RuntimeException runtimeException) {
+            localFileRepository.deleteCourseFile(courseFile);
+            return null;
+        }
+    }
+
+    /**
+     * @see ContentServerController#delete(String, String)
+     */
+    @DeleteMapping(path = "/content-server/file")
+    public ResponseEntity<CourseFile> deleteFile(
+            @RequestParam("courseId") String courseId,
+            @RequestParam("fileId") String fileId) {
+
+        String url = ServUrl.CONTENT.url + "/file/delete?course={?}&file={?}";
+        return restTemplate.postForEntity(url, null, CourseFile.class, courseId, fileId);
     }
 }

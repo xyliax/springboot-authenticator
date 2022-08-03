@@ -15,10 +15,17 @@ public class LoginService {
     @Resource
     private MongoRepository mongoRepository;
 
-    public ServiceSegment userRegister(User user) {
+    public ServiceSegment userRegister(User user, boolean register) {
         try {
-            User newUser = mongoRepository.createUser(user);
-            return new ServiceSegment(newUser.getUserId());
+            if (register) {
+                User newUser = mongoRepository.createUser(user);
+                return new ServiceSegment(newUser);
+            } else {
+                User newUser = mongoRepository.updateUser(user);
+                if (newUser == null)
+                    return new ServiceSegment(Cause.NO_RESULT);
+                return new ServiceSegment(newUser);
+            }
         } catch (DuplicateKeyException duplicateKeyException) {
             return new ServiceSegment(Cause.DUP_NAME);
         } catch (RuntimeException runtimeException) {
@@ -41,7 +48,7 @@ public class LoginService {
             if (resUser == null)
                 return new ServiceSegment(Cause.NO_RESULT);
             if (Objects.equals(password, resUser.getPassword()))
-                return new ServiceSegment(resUser.getEncryptD());
+                return new ServiceSegment(resUser);
             else
                 return new ServiceSegment(Cause.MISMATCH);
         } catch (RuntimeException runtimeException) {

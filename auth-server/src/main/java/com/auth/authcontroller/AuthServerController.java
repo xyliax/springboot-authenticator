@@ -12,13 +12,14 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 @RestController
+@RequestMapping(path = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthServerController {
     @Resource
     private AuthService authService;
     @Resource
     private InfoWrapper infoWrapper;
 
-    @GetMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/user")
     public ResponseEntity<User> user(
             @RequestParam("type") String type,
             @RequestParam("identifier") String identifier) {
@@ -27,7 +28,7 @@ public class AuthServerController {
         return infoWrapper.wrap(info, User.class);
     }
 
-    @GetMapping(path = "/user/user-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/user/user-list")
     public ResponseEntity<User[]> userList(
             @RequestParam("roleGroup") String roleGroup,
             @RequestParam("course") String courseId) {
@@ -40,7 +41,7 @@ public class AuthServerController {
         return infoWrapper.wrap(info, User[].class);
     }
 
-    @PostMapping(path = "/edit/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/edit/auth")
     public ResponseEntity<User> assign(
             @RequestParam("user") String userId,
             @RequestBody Map<String, String>[] idMapArray) {
