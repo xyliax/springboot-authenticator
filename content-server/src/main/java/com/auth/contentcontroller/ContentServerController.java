@@ -19,11 +19,35 @@ public class ContentServerController {
     private InfoWrapper infoWrapper;
 
     @PostMapping(path = "/course", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> course(
+    public ResponseEntity<String> register(
             @RequestBody Course course) {
 
         ServiceSegment info = contentService.createCourse(course);
         return infoWrapper.wrap(info, String.class);
+    }
+
+    @GetMapping(path = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Course> course(
+            @RequestParam("course") String courseId) {
+
+        ServiceSegment info = contentService.getCourseDetails(courseId);
+        return infoWrapper.wrap(info, Course.class);
+    }
+
+    @PostMapping(path = "/edit/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Course> deleteCourse(
+            @RequestParam("course") String courseId) {
+
+        ServiceSegment info = contentService.deleteCourse(courseId);
+        return infoWrapper.wrap(info, Course.class);
+    }
+
+    @GetMapping(path = "/course/course-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Course[]> courseList(
+            @RequestParam("user") String userId) {
+
+        ServiceSegment info = contentService.getCourseListByUser(userId);
+        return infoWrapper.wrap(info, Course[].class);
     }
 
     @PostMapping(path = "/file/upload", produces = MediaType.TEXT_PLAIN_VALUE)

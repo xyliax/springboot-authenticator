@@ -27,12 +27,8 @@ public class consumerController {
     @Resource
     private RestTemplate restTemplate;
 
-    @PutMapping("/login-server/user")
-    public ResponseEntity<String> registerAtLoginServer(
-            @RequestBody User user) {
-
-        String url = ServUrl.LOGIN.url + "/user";
-        return restTemplate.postForEntity(url, user, String.class);
+    private static String getTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 
     /**
@@ -52,13 +48,24 @@ public class consumerController {
     }
 
     /**
+     * @see LoginServerController#register(User)
+     */
+    @PutMapping("/login-server/user")
+    public ResponseEntity<String> registerAtLoginServer(
+            @RequestBody User user) {
+
+        String url = ServUrl.LOGIN.url + "/user";
+        return restTemplate.postForEntity(url, user, String.class);
+    }
+
+    /**
      * @param type       access type. e.g, "username"
      * @param identifier access string. e.g, username
-     * @see AuthServerController#details(String, String)
+     * @see AuthServerController#user(String, String)
      */
     @GetMapping(path = "/auth-server/user")
     public ResponseEntity<User> getUser(
-            @RequestHeader("type") String type,
+            @RequestParam("type") String type,
             @RequestParam("identifier") String identifier) {
 
         String url = ServUrl.AUTH.url + "/user?type={?}&identifier={?}";
@@ -67,43 +74,36 @@ public class consumerController {
 
     /**
      * Get an array of Users having a Role for a Course
-     * @param role     Role.toString(), "*" means "all"
-     * @param courseId courseId, "*" means "all"
+     * @param roleGroup Role.toString(), "*" means "all"
+     * @param courseId  courseId, "*" means "all"
      * @see AuthServerController#userList(String, String)
      */
     @GetMapping(path = "/auth-server/user-list")
     public ResponseEntity<User[]> getUserList(
-            @RequestParam("role") String role,
-            @RequestParam("course") String courseId) {
+            @RequestParam("roleGroup") String roleGroup,
+            @RequestParam("courseId") String courseId) {
 
-        String url = ServUrl.AUTH.url + "/user-list?role={?}&course={?}";
-        return restTemplate.getForEntity(url, User[].class, role, courseId);
+        String url = ServUrl.AUTH.url + "/user/user-list?roleGroup={?}&course={?}";
+        return restTemplate.getForEntity(url, User[].class, roleGroup, courseId);
     }
 
     /**
      * Assign or Un-assign a User of Role permission to a Course
-     * @param action true(assign), false(un-assign)
-     * @param idMap  {userId, courseId, role}
-     * @see AuthServerController#assign(String, Boolean, Map)
+     * @param userId userId
+     * @param idMap  {courseId, role, action}[]
+     * @see AuthServerController#assign(String, Map[])
      */
     @PostMapping(path = "/auth-server/auth")
-    public ResponseEntity<String> assignAuth(
-            @RequestParam("action") Boolean action,
-            @RequestBody Map<String, String> idMap) {
+    public ResponseEntity<User> assignAuth(
+            @RequestParam("userId") String userId,
+            @RequestBody Map<String, String>[] idMap) {
 
-        String role = idMap.get("role");
-        String url = ServUrl.AUTH.url + "/edit/auth?role={?}&action={?}";
-        return restTemplate.postForEntity(url, idMap, String.class, role, action);
-    }
-
-    private static String getTime() {
-        return LocalDateTime.now().format(DateTimeFormatter.
-                ofPattern("yyyyMMddHHmmss"));
+        String url = ServUrl.AUTH.url + "/edit/auth?user={?}";
+        return restTemplate.postForEntity(url, idMap, User.class, userId);
     }
 
     /**
-     * @param course
-     * @see ContentServerController#course(Course)
+     * @see ContentServerController#register(Course)
      */
     @PutMapping(path = "/content-server/course")
     public ResponseEntity<String> createCourse(
@@ -113,24 +113,56 @@ public class consumerController {
         return restTemplate.postForEntity(url, course, String.class);
     }
 
+    /**
+     * @see ContentServerController#course(String)
+     */
+    @GetMapping(path = "/content-server/course")
+    public ResponseEntity<Course> getCourse(
+            @RequestParam("courseId") String courseId) {
+
+        String url = ServUrl.CONTENT.url + "/course?course={?}";
+        return restTemplate.getForEntity(url, Course.class, courseId);
+    }
+
+    /**
+     * @see ContentServerController#deleteCourse(String)
+     */
+    @DeleteMapping(path = "/content-server/course")
+    public ResponseEntity<Course> deleteCourse(
+            @RequestParam("courseId") String courseId) {
+
+        String url = ServUrl.CONTENT.url + "/edit/course?course={?}";
+        return restTemplate.postForEntity(url, null, Course.class, courseId);
+    }
+
+    /**
+     * @param userId userId, "*" means "all"
+     * @see ContentServerController#courseList(String)
+     */
+    @GetMapping(path = "/content-server/course/course-list")
+    public ResponseEntity<Course[]> getCourseList(
+            @RequestParam("userId") String userId) {
+
+        String url = ServUrl.CONTENT.url + "/course/course-list/user={?}";
+        return restTemplate.getForEntity(url, Course[].class, userId);
+    }
+
     @GetMapping(path = "/content-server/file/download")
     public ResponseEntity<CourseFile> downloadFile(
-            @RequestParam("file") String fileId) {
+            @RequestParam("fileId") String fileId) {
 
         String url = ServUrl.CONTENT.url + "/file/download?file={?}";
         return restTemplate.getForEntity(url, CourseFile.class, fileId);
     }
 
     /**
-     * @param courseId
-     * @param description
-     * @param multipartFile
+     * upload & link a CourseFile with a Course
      * @see ContentServerController#upload(CourseFile)
      */
     @SneakyThrows
     @PostMapping(path = "/content-server/file/upload")
     public ResponseEntity<String> uploadFile(
-            @RequestParam("course") String courseId,
+            @RequestParam("courseId") String courseId,
             @RequestPart("description") String description,
             @RequestPart("file") MultipartFile multipartFile) {
 

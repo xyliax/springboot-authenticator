@@ -10,6 +10,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class ContentService {
@@ -24,6 +25,42 @@ public class ContentService {
             return new ServiceSegment(newCourse.getCourseId());
         } catch (DuplicateKeyException duplicateKeyException) {
             return new ServiceSegment(Cause.DUP_NAME);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment getCourseDetails(String courseId) {
+        try {
+            Course course = mongoRepository.readCourseById(courseId);
+            if (course == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(course);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment deleteCourse(String courseId) {
+        try {
+            Course course = mongoRepository.deleteCourseById(courseId);
+            if (course == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(course);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment getCourseListByUser(String userId) {
+        try {
+            List<Course> courseList;
+            if ("*".equals(userId))
+                courseList = mongoRepository.readCourseAll();
+            else courseList = mongoRepository.readCourseByUser(userId);
+            if (courseList == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(courseList.toArray(Course[]::new));
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }

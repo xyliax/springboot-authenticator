@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -38,57 +39,64 @@ public class AuthService {
         }
     }
 
-    public ServiceSegment assignAuth(String userId, String courseId,
-                                     String role, Boolean action) {
+    public ServiceSegment assignAuth(String userId, Map<String, String>[] idMapArray) {
         try {
             User user = mongoRepository.readUserById(userId);
-            Course course = mongoRepository.readCourseById(courseId);
-            boolean stat;
-            if (user == null || course == null)
+            if (user == null)
                 return new ServiceSegment(Cause.NO_RESULT);
-            if (action)
-                stat = user.addPermission(Role.valueOf(role), courseId);
-            else
-                stat = user.delPermission(Role.valueOf(role), courseId);
-            return new ServiceSegment(Boolean.toString(stat));
-        } catch (IllegalArgumentException illegalArgumentException) {
-            return new ServiceSegment(Cause.UNDEF_ARG);
-        } catch (RuntimeException runtimeException) {
-            return new ServiceSegment(Cause.UNKNOWN);
-        }
-    }
-
-    public ServiceSegment getUserListByRole(String roleStr) {
-        try {
-            List<User> userList;
-            if ("*".equals(roleStr))
-                userList = mongoRepository.readUserAll();
-            else {
-                Role role = Role.valueOf(roleStr);
-                userList = mongoRepository.readUserByRole(role);
+            for (Map<String, String> idMap : idMapArray) {
+                String courseId = idMap.get("courseId");
+                Role role = Role.parse(idMap.get("role"));
+                String actionStr = idMap.get("action");
+                boolean action;
+                if ("true".equalsIgnoreCase(actionStr))
+                    action = true;
+                else if ("false".equalsIgnoreCase(actionStr))
+                    action = false;
+                else continue;
+                if (action)
+                    user.addPermission(role, courseId);
+                else
+                    user.delPermission(role, courseId);
             }
-            return new ServiceSegment(userList.toArray(User[]::new));
-        } catch (IllegalArgumentException illegalArgumentException) {
-            return new ServiceSegment(Cause.UNDEF_ARG);
+            User userSaved = mongoRepository.updateUser(user);
+            return new ServiceSegment(userSaved);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }
     }
 
-    public ServiceSegment getUserListByAuth(String courseId, String roleStr) {
+    public ServiceSegment getUserList() {
         try {
-            Course course = mongoRepository.readCourseById(courseId);
             List<User> userList = mongoRepository.readUserAll();
-            Role role = Role.valueOf(roleStr);
-            if (Course.invalid(course))
-                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(userList.toArray(User[]::new));
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment getUserListByRole(String courseId, String roleGroup) {
+        try {
+            List<User> userList = mongoRepository.readUserAll();
+            Course course = mongoRepository.readCourseById(courseId);
+            Role[] roles;
+            if (course == null)
+                return new ServiceSegment(Cause.UNDEF_ARG);
+            switch (roleGroup) {
+                case "view":
+                    roles = Role.viewer();
+                    break;
+                case "edit":
+                    roles = Role.editor();
+                    break;
+                default:
+                    return new ServiceSegment(Cause.UNDEF_ARG);
+            }
             List<User> resList = new ArrayList<>();
             userList.forEach(user -> {
-                if (user.hasPermission(role, courseId)) resList.add(user);
+                if (course.permit(user, roles)) resList.add(user);
             });
-            return new ServiceSegment(resList);
-        } catch (IllegalArgumentException illegalArgumentException) {
-            return new ServiceSegment(Cause.UNDEF_ARG);
+            return new ServiceSegment(resList.toArray(User[]::new));
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }

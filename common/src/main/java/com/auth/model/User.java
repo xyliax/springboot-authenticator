@@ -30,16 +30,16 @@ public class User {
     private Role userRole;
     private HashMap<Role, HashSet<String>> permissions;
 
-    public boolean addPermission(Role role, String id) {
+    public void addPermission(Role role, String id) {
         if (!permissions.containsKey(role))
             permissions.put(role, new HashSet<>());
-        return permissions.get(role).add(id);
+        permissions.get(role).add(id);
     }
 
-    public boolean delPermission(Role role, String id) {
-        if (permissions.containsKey(role))
-            return permissions.get(role).remove(id);
-        else return false;
+    public void delPermission(Role role, String id) {
+        if (permissions.containsKey(role)) {
+            permissions.get(role).remove(id);
+        }
     }
 
     public boolean hasPermission(Role role, String id) {

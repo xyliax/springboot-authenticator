@@ -11,6 +11,6 @@ public class CourseFile {
     private String fileId;
     private String courseId;
     private String fileName;
-    private String description;
+    private String fileDescription;
     private String path;
 }

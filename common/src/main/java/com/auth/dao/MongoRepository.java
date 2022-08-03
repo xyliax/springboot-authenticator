@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 @Repository
@@ -55,8 +57,7 @@ public class MongoRepository {
     public Course createCourse(Course course) {
         String courseId = objectIdGenerator.generate().toString();
         course.setCourseId(courseId);
-        course.setValid(true);
-        course.setCourseFile(new ArrayList<>());
+        course.setCourseFiles(new HashMap<>());
         return mongoTemplate.insert(course, "COURSES");
     }
 
@@ -64,9 +65,36 @@ public class MongoRepository {
         return mongoTemplate.findById(courseId, Course.class, "COURSES");
     }
 
+    public Course deleteCourseById(String courseId) {
+        Query query = new Query(Criteria.where("_id").is(courseId));
+        return mongoTemplate.findAndRemove(query, Course.class, "COURSES");
+    }
+
     public List<Course> readCourseByName(String courseName) {
         Query query = new Query(Criteria.where("courseName").is(courseName));
         return mongoTemplate.find(query, Course.class, "COURSES");
+    }
+
+    public List<Course> readCourseAll() {
+        return mongoTemplate.findAll(Course.class, "COURSES");
+    }
+
+    public List<Course> readCourseByUser(String userId) {
+        User user = readUserById(userId);
+        if (user == null)
+            return null;
+        List<Course> courseList = new ArrayList<>();
+        HashMap<Role, HashSet<String>> permissions = user.getPermissions();
+        for (Role role : Role.viewer()) {
+            HashSet<String> courseSet = permissions.get(role);
+            if (courseSet == null) continue;
+            for (String courseId : courseSet) {
+                Course course = readCourseById(courseId);
+                if (course != null)
+                    courseList.add(course);
+            }
+        }
+        return courseList;
     }
 
     public boolean updateCourseForFile(String courseId, List<String> courseFileIds) {
@@ -80,8 +108,7 @@ public class MongoRepository {
         Course course = readCourseById(courseFile.getCourseId());
         if (course == null)
             return null;
-        course.addFile(courseFile.getFileId(), courseFile.getFileName(),
-                courseFile.getDescription(), courseFile.getPath());
+        course.addFile(courseFile);
         mongoTemplate.save(course, "COURSES");
         return courseFile.getPath();
     }
