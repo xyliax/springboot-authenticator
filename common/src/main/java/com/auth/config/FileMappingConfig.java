@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ConfigurationProperties(prefix = "file.mapping")
 public class FileMappingConfig implements WebMvcConfigurer {
-    public static String fileRealPath = "/Users/peiyuxing/content-file/test/";
+    public static String fileRealPath = "/Users/peiyuxing/content-file/";
     public static String fileMappingPath = "/content-file/**";
     public static String fileMappingPathPrefix = "/content-file/";
 

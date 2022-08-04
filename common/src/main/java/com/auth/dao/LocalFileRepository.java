@@ -1,5 +1,6 @@
 package com.auth.dao;
 
+import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import lombok.SneakyThrows;
 import org.bson.codecs.ObjectIdGenerator;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import static com.auth.config.FileMappingConfig.fileMappingPathPrefix;
 import static com.auth.config.FileMappingConfig.fileRealPath;
@@ -26,7 +28,7 @@ public class LocalFileRepository {
     //Course File
     @SneakyThrows
     public CourseFile createCourseFile(MultipartFile multipartFile, String courseId, String description) {
-        File fileDir = new File(fileRealPath);
+        File fileDir = new File(fileRealPath + courseId + File.separator);
         if (!fileDir.exists())
             if (!fileDir.mkdirs())
                 return null;
@@ -35,8 +37,9 @@ public class LocalFileRepository {
         File file = new File(fileDir, newFileName);
         multipartFile.transferTo(file);
         String fileId = objectIdGenerator.generate().toString();
-        CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description,
-                fileMappingPathPrefix + newFileName, fileRealPath + newFileName);
+        CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description, new Date().toString(),
+                fileMappingPathPrefix + newFileName,
+                fileRealPath + courseId + File.separator + newFileName);
         courseFile.setFileId(fileId);
         return courseFile;
     }
@@ -45,5 +48,20 @@ public class LocalFileRepository {
         File file = new File(courseFile.getLocation());
         if (!file.delete())
             file.deleteOnExit();
+    }
+
+    public void deleteCourse(Course course) {
+        File dir = new File(fileRealPath + course.getCourseId() + File.separator);
+        if (!dir.delete()) {
+            File[] files = dir.listFiles();
+            if (files == null)
+                return;
+            for (File file : files) {
+                if (!file.delete())
+                    file.deleteOnExit();
+            }
+            if (!dir.delete())
+                dir.deleteOnExit();
+        }
     }
 }

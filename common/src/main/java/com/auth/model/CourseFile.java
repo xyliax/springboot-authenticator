@@ -12,6 +12,7 @@ public class CourseFile {
     private String courseId;
     private String fileName;
     private String fileDescription;
+    private String createDate;
     private String path;
     private String location;
 }

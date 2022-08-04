@@ -46,6 +46,7 @@ public class ContentService {
             Course course = mongoRepository.deleteCourseById(courseId);
             if (course == null)
                 return new ServiceSegment(Cause.NO_RESULT);
+            localFileRepository.deleteCourse(course);
             return new ServiceSegment(course);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
