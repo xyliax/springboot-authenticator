@@ -37,9 +37,7 @@ public class LocalFileRepository {
         File file = new File(fileDir, newFileName);
         multipartFile.transferTo(file);
         String fileId = objectIdGenerator.generate().toString();
-        CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description, new Date().toString(),
-                fileMappingPathPrefix + newFileName,
-                fileRealPath + courseId + File.separator + newFileName);
+        CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description, new Date().toString(), fileMappingPathPrefix + courseId + File.separator + newFileName, fileRealPath + courseId + File.separator + newFileName);
         courseFile.setFileId(fileId);
         return courseFile;
     }
