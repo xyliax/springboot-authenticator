@@ -12,10 +12,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class MongoRepository {
@@ -41,7 +38,11 @@ public class MongoRepository {
     }
 
     public User updateUser(User user) {
-        if (readUserById(user.getUserId()) == null)
+        User userById = readUserById(user.getUserId());
+        if (userById == null)
+            return null;
+        User userByName = readUserByName(user.getUsername());
+        if (!Objects.equals(userById.getUserId(), userByName.getUserId()))
             return null;
         return mongoTemplate.save(user, "USERS");
     }
