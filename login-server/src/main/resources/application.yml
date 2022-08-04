@@ -5,7 +5,7 @@ spring:
   application:
     name: login-server
   profiles:
-    active: mongo
+    active: database
 
 eureka:
   instance:

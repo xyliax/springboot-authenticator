@@ -10,13 +10,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ConfigurationProperties(prefix = "spring.auth.file")
 public class FileMappingConfig implements WebMvcConfigurer {
-    public static String FILE_REAL_PATH = "/Users/peiyuxing/content-file/";
-    public static String FILE_MAPPING_PATH = "/content-file/**";
-    public static String FILE_MAPPING_PATH_PREFIX = "/content-file/";
+    public static String fileRealPath = "/Users/peiyuxing/content-file/";
+    public static String fileMappingPath = "/content-file/**";
+    public static String fileMappingPathPrefix = "/content-file/";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(FILE_MAPPING_PATH)
-                .addResourceLocations("file:" + FILE_REAL_PATH);
+        registry.addResourceHandler(fileMappingPath)
+                .addResourceLocations("file:" + fileRealPath);
     }
 }
