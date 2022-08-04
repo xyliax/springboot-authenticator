@@ -23,7 +23,7 @@ public class LoginService {
             } else {
                 User newUser = mongoRepository.updateUser(user);
                 if (newUser == null)
-                    return new ServiceSegment(Cause.NO_RESULT);
+                    return new ServiceSegment(Cause.DUP_NAME);
                 return new ServiceSegment(newUser);
             }
         } catch (DuplicateKeyException duplicateKeyException) {

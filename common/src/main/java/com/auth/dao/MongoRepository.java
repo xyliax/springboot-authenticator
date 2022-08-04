@@ -47,6 +47,11 @@ public class MongoRepository {
         return mongoTemplate.save(user, "USERS");
     }
 
+    public User deleteUser(String userId) {
+        Query query = new Query(Criteria.where("_id").is(userId));
+        return mongoTemplate.findAndRemove(query, User.class, "USERS");
+    }
+
     public List<User> readUserAll() {
         return mongoTemplate.findAll(User.class, "USERS");
     }

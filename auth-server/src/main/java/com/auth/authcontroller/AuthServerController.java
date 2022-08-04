@@ -28,6 +28,14 @@ public class AuthServerController {
         return infoWrapper.wrap(info, User.class);
     }
 
+    @PostMapping(path = "/user")
+    public ResponseEntity<User> delete(
+            @RequestParam("user") String userId) {
+
+        ServiceSegment info = authService.deleteUser(userId);
+        return infoWrapper.wrap(info, User.class);
+    }
+
     @GetMapping(path = "/user/user-list")
     public ResponseEntity<User[]> userList(
             @RequestParam("roleGroup") String roleGroup,

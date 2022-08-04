@@ -68,6 +68,17 @@ public class consumerController {
     }
 
     /**
+     * @see AuthServerController#delete(String)
+     */
+    @DeleteMapping(path = "/auth-server/user")
+    public ResponseEntity<User> deleteUser(
+            @RequestParam("userId") String userId) {
+
+        String url = ServUrl.AUTH.url + "/user?user={?}";
+        return restTemplate.postForEntity(url, null, User.class, userId);
+    }
+
+    /**
      * Get an array of Users having a Role for a Course.
      * <br>
      * roleGroup and courseId can be either all "*" or no "*"

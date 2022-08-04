@@ -39,6 +39,17 @@ public class AuthService {
         }
     }
 
+    public ServiceSegment deleteUser(String userId) {
+        try {
+            User user = mongoRepository.deleteUser(userId);
+            if (user == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(user);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
     public ServiceSegment assignAuth(String userId, Map<String, String>[] idMapArray) {
         try {
             User user = mongoRepository.readUserById(userId);
