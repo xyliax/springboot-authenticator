@@ -1,6 +1,5 @@
 package com.auth.dao;
 
-import com.auth.config.FileMappingConfig;
 import com.auth.model.CourseFile;
 import lombok.SneakyThrows;
 import org.bson.codecs.ObjectIdGenerator;
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static com.auth.config.FileMappingConfig.fileMappingPathPrefix;
+import static com.auth.config.FileMappingConfig.fileRealPath;
 
 @Repository
 public class LocalFileRepository {
@@ -26,17 +26,17 @@ public class LocalFileRepository {
     //Course File
     @SneakyThrows
     public CourseFile createCourseFile(MultipartFile multipartFile, String courseId, String description) {
-        File fileRealPath = new File(FileMappingConfig.fileRealPath);
-        if (!fileRealPath.exists())
-            if (!fileRealPath.mkdirs())
+        File fileDir = new File(fileRealPath);
+        if (!fileDir.exists())
+            if (!fileDir.mkdirs())
                 return null;
         String fileName = multipartFile.getOriginalFilename();
         String newFileName = getTime() + "_" + fileName;
-        File file = new File(fileRealPath, newFileName);
+        File file = new File(fileDir, newFileName);
         multipartFile.transferTo(file);
         String fileId = objectIdGenerator.generate().toString();
         CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description,
-                fileMappingPathPrefix + newFileName, FileMappingConfig.fileRealPath + newFileName);
+                fileMappingPathPrefix + newFileName, fileRealPath + newFileName);
         courseFile.setFileId(fileId);
         return courseFile;
     }
