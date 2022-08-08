@@ -99,6 +99,8 @@ public class ContentService {
             if (archiveSaved == null)
                 return new ServiceSegment(Cause.NO_RESULT);
             return new ServiceSegment(archiveSaved);
+        } catch (DuplicateKeyException duplicateKeyException) {
+            return new ServiceSegment(Cause.DUP_NAME);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }

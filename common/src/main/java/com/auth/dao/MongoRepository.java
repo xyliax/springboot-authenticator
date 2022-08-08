@@ -149,11 +149,12 @@ public class MongoRepository {
         archive.setSubArchives(new ArrayList<>());
         archive.setCourses(new ArrayList<>());
         archive.setParentId(parentId);
+        Archive archiveSaved = mongoTemplate.insert(archive, ARCHIVE);
         if (!parentId.isEmpty()) {
             parentArchive.addArchive(archive);
             updateArchive(parentArchive);
         }
-        return mongoTemplate.insert(archive, ARCHIVE);
+        return archiveSaved;
     }
 
     public void updateArchive(Archive archive) {

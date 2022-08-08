@@ -236,6 +236,7 @@ public class consumerController {
     }
 
     /**
+     * @param idMap {courseId, action}
      * @see ContentServerController#archiveCourse(String, Map[])
      */
     @PostMapping(path = "/content-server/archive/edit")

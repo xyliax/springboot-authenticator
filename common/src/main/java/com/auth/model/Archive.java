@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class Archive {
     @MongoId(targetType = FieldType.STRING)
     private String archiveId;
-    @Indexed
+    @Indexed(unique = true)
     private String archiveName;
     private String appendix;
     private String description;
