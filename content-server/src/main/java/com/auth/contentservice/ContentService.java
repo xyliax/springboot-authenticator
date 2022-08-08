@@ -93,9 +93,9 @@ public class ContentService {
         }
     }
 
-    public ServiceSegment createArchive(Archive archive, String parentId) {
+    public ServiceSegment createArchive(Archive archive) {
         try {
-            Archive archiveSaved = mongoRepository.createArchive(archive, parentId);
+            Archive archiveSaved = mongoRepository.createArchive(archive);
             if (archiveSaved == null)
                 return new ServiceSegment(Cause.NO_RESULT);
             return new ServiceSegment(archiveSaved);
@@ -109,9 +109,9 @@ public class ContentService {
             Archive archive;
             if (archiveId == null) {
                 archive = new Archive(null, "DEFAULT",
-                        "default archive", null, null,
-                        (ArrayList<Archive>) mongoRepository.readArchiveByParent(null),
-                        (ArrayList<Course>) mongoRepository.readCourseByParent(null));
+                        "default archive", null, null, null,
+                        (ArrayList<Archive>) mongoRepository.readArchiveByParent(""),
+                        (ArrayList<Course>) mongoRepository.readCourseByParent(""));
             } else {
                 archive = mongoRepository.readArchiveById(archiveId);
                 if (archive == null)

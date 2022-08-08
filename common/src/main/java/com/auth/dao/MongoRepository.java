@@ -115,8 +115,8 @@ public class MongoRepository {
         return mongoTemplate.find(query, Course.class, COURSE);
     }
 
-    public Course updateCourse(Course course) {
-        return mongoTemplate.save(course, COURSE);
+    public void updateCourse(Course course) {
+        mongoTemplate.save(course, COURSE);
     }
 
     public CourseFile createCourseFile(CourseFile courseFile) {
@@ -128,6 +128,7 @@ public class MongoRepository {
         return courseFile;
     }
 
+
     public CourseFile deleteCourseFile(String fileId, String courseId) {
         Course course = readCourseById(courseId);
         if (course == null)
@@ -138,16 +139,25 @@ public class MongoRepository {
         return courseFile;
     }
 
-    public Archive createArchive(Archive archive, String parentId) {
+    public Archive createArchive(Archive archive) {
+        String parentId = archive.getParentId();
         Archive parentArchive = readArchiveById(parentId);
-        if (parentArchive == null)
+        if (!parentId.isEmpty() && parentArchive == null)
             return null;
         String archiveId = objectIdGenerator.generate().toString();
         archive.setArchiveId(archiveId);
         archive.setSubArchives(new ArrayList<>());
+        archive.setCourses(new ArrayList<>());
         archive.setParentId(parentId);
-        parentArchive.addArchive(archive);
+        if (!parentId.isEmpty()) {
+            parentArchive.addArchive(archive);
+            updateArchive(parentArchive);
+        }
         return mongoTemplate.insert(archive, ARCHIVE);
+    }
+
+    public void updateArchive(Archive archive) {
+        mongoTemplate.save(archive, ARCHIVE);
     }
 
     public Archive deleteArchiveById(String archiveId) {

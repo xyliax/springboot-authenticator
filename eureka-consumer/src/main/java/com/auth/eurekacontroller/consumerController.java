@@ -205,7 +205,7 @@ public class consumerController {
      */
     @PutMapping(path = "/content-server/archive")
     public ResponseEntity<Archive> createArchive(
-            @RequestParam("parentId") String parentId,
+            @RequestParam(value = "parentId", required = false) String parentId,
             @RequestBody Archive archive) {
 
         String url = ServUrl.CONTENT.url + "/archive?parent={?}";

@@ -72,10 +72,9 @@ public class ContentServerController {
 
     @PostMapping(path = "/archive")
     public ResponseEntity<Archive> makeArchive(
-            @RequestParam("parent") String parentId,
             @RequestBody Archive archive) {
 
-        ServiceSegment info = contentService.createArchive(archive, parentId);
+        ServiceSegment info = contentService.createArchive(archive);
         return infoWrapper.wrap(info, Archive.class);
     }
 

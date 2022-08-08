@@ -21,6 +21,7 @@ public class Archive {
     private String archiveId;
     @Indexed
     private String archiveName;
+    private String appendix;
     private String description;
     private String coverImage;
     private String parentId;
