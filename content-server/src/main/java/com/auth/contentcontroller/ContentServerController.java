@@ -1,6 +1,7 @@
 package com.auth.contentcontroller;
 
 import com.auth.contentservice.ContentService;
+import com.auth.model.Archive;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.util.InfoWrapper;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/content", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +54,7 @@ public class ContentServerController {
     }
 
     @PostMapping(path = "/file/upload")
-    public ResponseEntity<CourseFile> upload(
+    public ResponseEntity<CourseFile> uploadFile(
             @RequestBody CourseFile courseFile) {
 
         ServiceSegment info = contentService.uploadCourseFile(courseFile);
@@ -60,11 +62,46 @@ public class ContentServerController {
     }
 
     @PostMapping(path = "/file/delete")
-    public ResponseEntity<CourseFile> delete(
+    public ResponseEntity<CourseFile> deleteFile(
             @RequestParam("course") String courseId,
             @RequestParam("file") String fileId) {
 
         ServiceSegment info = contentService.deleteCourseFile(fileId, courseId);
         return infoWrapper.wrap(info, CourseFile.class);
+    }
+
+    @PostMapping(path = "/archive")
+    public ResponseEntity<Archive> makeArchive(
+            @RequestParam("parent") String parentId,
+            @RequestBody Archive archive) {
+
+        ServiceSegment info = contentService.createArchive(archive, parentId);
+        return infoWrapper.wrap(info, Archive.class);
+    }
+
+    @GetMapping(path = "/archive")
+    public ResponseEntity<Archive> archive(
+            @RequestParam(value = "archiveId", required = false) String archiveId) {
+
+        ServiceSegment info = contentService.getArchiveDetails(archiveId);
+        return infoWrapper.wrap(info, Archive.class);
+    }
+
+    @PostMapping(path = "/archive/delete")
+    public ResponseEntity<Archive> deleteArchive(
+            @RequestParam("delete") boolean delete,
+            @RequestParam("archive") String archiveId) {
+
+        ServiceSegment info = contentService.deleteArchive(delete, archiveId);
+        return infoWrapper.wrap(info, Archive.class);
+    }
+
+    @PostMapping(path = "/archive/edit")
+    public ResponseEntity<Archive> archiveCourse(
+            @RequestParam("archive") String archiveId,
+            @RequestBody Map<String, String>[] idMapArray) {
+
+        ServiceSegment info = contentService.archiveCourse(archiveId, idMapArray);
+        return infoWrapper.wrap(info, Archive.class);
     }
 }

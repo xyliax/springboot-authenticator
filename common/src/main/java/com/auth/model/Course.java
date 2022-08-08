@@ -23,6 +23,7 @@ public class Course {
     @Indexed(unique = true)
     private String courseName;
     private String description;
+    private String parentId;
     private HashMap<String, CourseFile> courseFiles;
 
     public void addFile(CourseFile courseFile) {

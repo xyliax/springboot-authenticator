@@ -3,6 +3,7 @@ package com.auth.contentservice;
 import com.auth.dao.LocalFileRepository;
 import com.auth.dao.MongoRepository;
 import com.auth.defenum.Cause;
+import com.auth.model.Archive;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.util.ServiceSegment;
@@ -10,7 +11,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ContentService {
@@ -85,6 +88,83 @@ public class ContentService {
                 return new ServiceSegment(Cause.UNDEF_ARG);
             localFileRepository.deleteCourseFile(courseFile);
             return new ServiceSegment(courseFile);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment createArchive(Archive archive, String parentId) {
+        try {
+            Archive archiveSaved = mongoRepository.createArchive(archive, parentId);
+            if (archiveSaved == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(archiveSaved);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment getArchiveDetails(String archiveId) {
+        try {
+            Archive archive;
+            if (archiveId == null) {
+                archive = new Archive(null, "DEFAULT",
+                        "default archive", null,
+                        (ArrayList<Archive>) mongoRepository.readArchiveByParent(null),
+                        (ArrayList<Course>) mongoRepository.readCourseByParent(null));
+            } else {
+                archive = mongoRepository.readArchiveById(archiveId);
+                if (archive == null)
+                    return new ServiceSegment(Cause.NO_RESULT);
+            }
+            return new ServiceSegment(archive);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment deleteArchive(boolean delete, String archiveId) {
+        try {
+            Archive archive;
+            if (delete)
+                archive = mongoRepository.deleteArchiveById(archiveId);
+            else
+                archive = mongoRepository.dismissArchiveById(archiveId);
+            if (archive == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            return new ServiceSegment(archive);
+        } catch (RuntimeException runtimeException) {
+            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    public ServiceSegment archiveCourse(String archiveId, Map<String, String>[] idMapArray) {
+        try {
+            Archive archive = mongoRepository.readArchiveById(archiveId);
+            if (archive == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            for (Map<String, String> idMap : idMapArray) {
+                String courseId = idMap.get("courseId");
+                String actionStr = idMap.get("action");
+                boolean action;
+                if ("true".equalsIgnoreCase(actionStr))
+                    action = true;
+                else if ("false".equalsIgnoreCase(actionStr))
+                    action = false;
+                else continue;
+                Course course = mongoRepository.readCourseById(courseId);
+                if (course == null)
+                    continue;
+                if (action) {
+                    course.setParentId(archiveId);
+                    archive.addCourse(course);
+                } else {
+                    course.setParentId(null);
+                    archive.delCourse(course);
+                }
+                mongoRepository.updateCourse(course);
+            }
+            return new ServiceSegment(archive);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }

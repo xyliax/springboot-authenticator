@@ -41,7 +41,7 @@ public class AuthService {
 
     public ServiceSegment deleteUser(String userId) {
         try {
-            User user = mongoRepository.deleteUser(userId);
+            User user = mongoRepository.deleteUserById(userId);
             if (user == null)
                 return new ServiceSegment(Cause.NO_RESULT);
             return new ServiceSegment(user);

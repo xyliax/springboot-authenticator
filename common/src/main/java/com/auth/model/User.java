@@ -31,15 +31,18 @@ public class User {
     private HashMap<Role, HashSet<String>> permissions;
 
     public void addPermission(Role role, String id) {
+        if (role == null || id == null)
+            return;
         if (!permissions.containsKey(role))
             permissions.put(role, new HashSet<>());
         permissions.get(role).add(id);
     }
 
     public void delPermission(Role role, String id) {
-        if (permissions.containsKey(role)) {
+        if (role == null || id == null)
+            return;
+        if (permissions.containsKey(role))
             permissions.get(role).remove(id);
-        }
     }
 
     public boolean hasPermission(Role role, String id) {

@@ -5,6 +5,7 @@ import com.auth.contentcontroller.ContentServerController;
 import com.auth.dao.LocalFileRepository;
 import com.auth.defenum.Role;
 import com.auth.logincontroller.LoginServerController;
+import com.auth.model.Archive;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.model.User;
@@ -165,7 +166,7 @@ public class consumerController {
 
     /**
      * upload & link a CourseFile with a Course
-     * @see ContentServerController#upload(CourseFile)
+     * @see ContentServerController#uploadFile(CourseFile)
      */
     @PutMapping(path = "/content-server/file")
     public ResponseEntity<CourseFile> uploadFile(
@@ -174,7 +175,6 @@ public class consumerController {
             @RequestPart("file") MultipartFile multipartFile) {
 
         String url = ServUrl.CONTENT.url + "/file/upload";
-
         CourseFile courseFile = localFileRepository.createCourseFile(multipartFile, courseId, description);
         try {
             ResponseEntity<CourseFile> response = restTemplate.
@@ -189,7 +189,7 @@ public class consumerController {
     }
 
     /**
-     * @see ContentServerController#delete(String, String)
+     * @see ContentServerController#deleteFile(String, String)
      */
     @DeleteMapping(path = "/content-server/file")
     public ResponseEntity<CourseFile> deleteFile(
@@ -198,5 +198,52 @@ public class consumerController {
 
         String url = ServUrl.CONTENT.url + "/file/delete?course={?}&file={?}";
         return restTemplate.postForEntity(url, null, CourseFile.class, courseId, fileId);
+    }
+
+    /**
+     * @see ContentServerController#makeArchive(String, Archive)
+     */
+    @PutMapping(path = "/content-server/archive")
+    public ResponseEntity<Archive> createArchive(
+            @RequestParam("parentId") String parentId,
+            @RequestBody Archive archive) {
+
+        String url = ServUrl.CONTENT.url + "/archive?parent={?}";
+        return restTemplate.postForEntity(url, archive, Archive.class, parentId);
+    }
+
+    /**
+     * @see ContentServerController#archive(String)
+     */
+    @GetMapping(path = "/content-server/archive")
+    public ResponseEntity<Archive> getArchive(
+            @RequestParam(value = "archiveId", required = false) String archiveId) {
+
+        String url = ServUrl.CONTENT.url + "/archive?archive={?}";
+        return restTemplate.getForEntity(url, Archive.class, archiveId);
+    }
+
+    /**
+     * @see ContentServerController#deleteArchive(boolean, String)
+     */
+    @DeleteMapping(path = "/content-server/archive")
+    public ResponseEntity<Archive> deleteArchive(
+            @RequestParam("delete") boolean delete,
+            @RequestParam("archiveId") String archiveId) {
+
+        String url = ServUrl.CONTENT.url + "/archive/delete?delete={?}&archive={?}";
+        return restTemplate.postForEntity(url, null, Archive.class, delete, archiveId);
+    }
+
+    /**
+     * @see ContentServerController#archiveCourse(String, Map[])
+     */
+    @PostMapping(path = "/content-server/archive/edit")
+    public ResponseEntity<Archive> archiveCourse(
+            @RequestParam("archiveId") String archiveId,
+            @RequestBody Map<String, String>[] idMap) {
+
+        String url = ServUrl.CONTENT.url + "/archive/edit?archive={?}";
+        return restTemplate.postForEntity(url, idMap, Archive.class, archiveId);
     }
 }

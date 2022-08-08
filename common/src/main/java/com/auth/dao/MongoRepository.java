@@ -1,6 +1,7 @@
 package com.auth.dao;
 
 import com.auth.defenum.Role;
+import com.auth.model.Archive;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.model.User;
@@ -8,7 +9,6 @@ import org.bson.codecs.ObjectIdGenerator;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -21,20 +21,25 @@ public class MongoRepository {
     @Resource
     private ObjectIdGenerator objectIdGenerator;
 
+    private static final String USER = "USERS";
+    private static final String COURSE = "COURSES";
+    private static final String ARCHIVE = "ARCHIVES";
+
     //USERS
     public User createUser(User user) {
         String userId = objectIdGenerator.generate().toString();
         user.setUserId(userId);
-        return mongoTemplate.insert(user, "USERS");
+        user.setPermissions(new HashMap<>());
+        return mongoTemplate.insert(user, USER);
     }
 
     public User readUserById(String userId) {
-        return mongoTemplate.findById(userId, User.class, "USERS");
+        return mongoTemplate.findById(userId, User.class, USER);
     }
 
     public User readUserByName(String username) {
         Query query = new Query(Criteria.where("username").is(username));
-        return mongoTemplate.findOne(query, User.class, "USERS");
+        return mongoTemplate.findOne(query, User.class, USER);
     }
 
     public User updateUser(User user) {
@@ -44,21 +49,21 @@ public class MongoRepository {
         User userByName = readUserByName(user.getUsername());
         if (!Objects.equals(userById.getUserId(), userByName.getUserId()))
             return null;
-        return mongoTemplate.save(user, "USERS");
+        return mongoTemplate.save(user, USER);
     }
 
-    public User deleteUser(String userId) {
+    public User deleteUserById(String userId) {
         Query query = new Query(Criteria.where("_id").is(userId));
-        return mongoTemplate.findAndRemove(query, User.class, "USERS");
+        return mongoTemplate.findAndRemove(query, User.class, USER);
     }
 
     public List<User> readUserAll() {
-        return mongoTemplate.findAll(User.class, "USERS");
+        return mongoTemplate.findAll(User.class, USER);
     }
 
     public List<User> readUserByRole(Role role) {
         Query query = new Query(Criteria.where("userRole").is(role));
-        return mongoTemplate.find(query, User.class, "USERS");
+        return mongoTemplate.find(query, User.class, USER);
     }
 
     //Course
@@ -66,25 +71,25 @@ public class MongoRepository {
         String courseId = objectIdGenerator.generate().toString();
         course.setCourseId(courseId);
         course.setCourseFiles(new HashMap<>());
-        return mongoTemplate.insert(course, "COURSES");
+        return mongoTemplate.insert(course, COURSE);
     }
 
     public Course readCourseById(String courseId) {
-        return mongoTemplate.findById(courseId, Course.class, "COURSES");
+        return mongoTemplate.findById(courseId, Course.class, COURSE);
     }
 
     public Course deleteCourseById(String courseId) {
         Query query = new Query(Criteria.where("_id").is(courseId));
-        return mongoTemplate.findAndRemove(query, Course.class, "COURSES");
+        return mongoTemplate.findAndRemove(query, Course.class, COURSE);
     }
 
     public List<Course> readCourseByName(String courseName) {
         Query query = new Query(Criteria.where("courseName").is(courseName));
-        return mongoTemplate.find(query, Course.class, "COURSES");
+        return mongoTemplate.find(query, Course.class, COURSE);
     }
 
     public List<Course> readCourseAll() {
-        return mongoTemplate.findAll(Course.class, "COURSES");
+        return mongoTemplate.findAll(Course.class, COURSE);
     }
 
     public List<Course> readCourseByUser(String userId) {
@@ -105,11 +110,13 @@ public class MongoRepository {
         return courseList;
     }
 
-    public boolean updateCourseForFile(String courseId, List<String> courseFileIds) {
-        Query query = Query.query(Criteria.where("courseId").is(courseId));
-        Update update = Update.update("courseFileIds", courseFileIds);
-        return mongoTemplate.updateFirst(query, update, Course.class,
-                "COURSES").wasAcknowledged();
+    public List<Course> readCourseByParent(String parentId) {
+        Query query = new Query(Criteria.where("parentId").is(parentId));
+        return mongoTemplate.find(query, Course.class, COURSE);
+    }
+
+    public Course updateCourse(Course course) {
+        return mongoTemplate.save(course, COURSE);
     }
 
     public CourseFile createCourseFile(CourseFile courseFile) {
@@ -117,7 +124,7 @@ public class MongoRepository {
         if (course == null)
             return null;
         course.addFile(courseFile);
-        mongoTemplate.save(course, "COURSES");
+        mongoTemplate.save(course, COURSE);
         return courseFile;
     }
 
@@ -126,10 +133,54 @@ public class MongoRepository {
         if (course == null)
             return null;
         CourseFile courseFile = course.getCourseFiles().get(fileId);
-        HashMap<String, CourseFile> courseFiles = course.getCourseFiles();
-        courseFiles.remove(fileId);
-        course.setCourseFiles(courseFiles);
-        mongoTemplate.save(course, "COURSES");
+        course.delFile(fileId);
+        mongoTemplate.save(course, COURSE);
         return courseFile;
+    }
+
+    public Archive createArchive(Archive archive, String parentId) {
+        Archive parentArchive = readArchiveById(parentId);
+        if (parentArchive == null)
+            return null;
+        String archiveId = objectIdGenerator.generate().toString();
+        archive.setArchiveId(archiveId);
+        archive.setSubArchives(new ArrayList<>());
+        archive.setParentId(parentId);
+        parentArchive.addArchive(archive);
+        return mongoTemplate.insert(archive, ARCHIVE);
+    }
+
+    public Archive deleteArchiveById(String archiveId) {
+        Archive archive = readArchiveById(archiveId);
+        if (archive == null)
+            return null;
+        for (Archive subArchive : archive.getSubArchives())
+            deleteArchiveById(subArchive.getArchiveId());
+        for (Course course : archive.getCourses())
+            deleteCourseById(course.getCourseId());
+        Query query = new Query(Criteria.where("_id").is(archiveId));
+        return mongoTemplate.findAndRemove(query, Archive.class, ARCHIVE);
+    }
+
+    public Archive dismissArchiveById(String archiveId) {
+        Archive archive = readArchiveById(archiveId);
+        if (archive == null)
+            return null;
+        for (Archive subArchive : archive.getSubArchives())
+            subArchive.setParentId(null);
+        for (Course course : archive.getCourses())
+            course.setParentId(null);
+        archive.setSubArchives(new ArrayList<>());
+        archive.setCourses(new ArrayList<>());
+        return mongoTemplate.save(archive, ARCHIVE);
+    }
+
+    public Archive readArchiveById(String archiveId) {
+        return mongoTemplate.findById(archiveId, Archive.class, ARCHIVE);
+    }
+
+    public List<Archive> readArchiveByParent(String parentId) {
+        Query query = new Query(Criteria.where("parentId").is(parentId));
+        return mongoTemplate.find(query, Archive.class, ARCHIVE);
     }
 }
