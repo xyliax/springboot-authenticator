@@ -109,7 +109,7 @@ public class ContentService {
             Archive archive;
             if (archiveId == null) {
                 archive = new Archive(null, "DEFAULT",
-                        "default archive", null,
+                        "default archive", null, null,
                         (ArrayList<Archive>) mongoRepository.readArchiveByParent(null),
                         (ArrayList<Course>) mongoRepository.readCourseByParent(null));
             } else {

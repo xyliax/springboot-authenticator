@@ -23,6 +23,7 @@ public class Course {
     @Indexed(unique = true)
     private String courseName;
     private String description;
+    private String coverImage;
     private String parentId;
     private HashMap<String, CourseFile> courseFiles;
 

@@ -22,6 +22,7 @@ public class Archive {
     @Indexed
     private String archiveName;
     private String description;
+    private String coverImage;
     private String parentId;
     private ArrayList<Archive> subArchives;
     private ArrayList<Course> courses;
