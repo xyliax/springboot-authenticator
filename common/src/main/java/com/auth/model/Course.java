@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class Course {
     @MongoId(targetType = FieldType.STRING)
     private String courseId;
-    @Indexed(unique = true)
+    @Indexed
     private String courseName;
     private String description;
     private String coverImage;

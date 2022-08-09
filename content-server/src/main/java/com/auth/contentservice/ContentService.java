@@ -158,14 +158,28 @@ public class ContentService {
                 if (course == null)
                     continue;
                 if (action) {
+                    if (!course.getParentId().isEmpty()) {
+                        Archive parentArchive = mongoRepository.readArchiveById(course.getParentId());
+                        if (parentArchive != null) {
+                            parentArchive.delCourse(course);
+                            mongoRepository.updateArchive(parentArchive);
+                        }
+                    }
                     course.setParentId(archiveId);
                     archive.addCourse(course);
                 } else {
-                    course.setParentId(null);
-                    archive.delCourse(course);
+                    if (!course.getParentId().isEmpty()) {
+                        Archive parentArchive = mongoRepository.readArchiveById(course.getParentId());
+                        if (parentArchive != null) {
+                            parentArchive.delCourse(course);
+                            mongoRepository.updateArchive(parentArchive);
+                        }
+                    }
+                    course.setParentId("");
                 }
                 mongoRepository.updateCourse(course);
             }
+            mongoRepository.updateArchive(archive);
             return new ServiceSegment(archive);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);

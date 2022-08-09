@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class Archive {
     @MongoId(targetType = FieldType.STRING)
     private String archiveId;
-    @Indexed(unique = true)
+    @Indexed
     private String archiveName;
     private String appendix;
     private String description;
@@ -29,10 +29,11 @@ public class Archive {
     private ArrayList<Course> courses;
 
     public void addArchive(Archive archive) {
-        if (archive.parentId != null)
-            return;
+        for (Archive subArchive : subArchives) {
+            if (subArchive.getArchiveId().equals(archive.getArchiveId()))
+                return;
+        }
         subArchives.add(archive);
-        archive.setParentId(this.archiveId);
     }
 
     public void delArchive(String archiveId) {
@@ -45,6 +46,10 @@ public class Archive {
     }
 
     public void addCourse(Course course) {
+        for (Course subCourse : courses) {
+            if (subCourse.getCourseId().equals(course.getCourseId()))
+                return;
+        }
         courses.add(course);
     }
 

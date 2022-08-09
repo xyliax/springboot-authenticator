@@ -6,6 +6,7 @@ import com.auth.model.Course;
 import com.auth.model.CourseFile;
 import com.auth.model.User;
 import org.bson.codecs.ObjectIdGenerator;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -68,6 +69,8 @@ public class MongoRepository {
 
     //Course
     public Course createCourse(Course course) {
+        if (readCourseByName(course.getCourseName()) != null)
+            throw new DuplicateKeyException("");
         String courseId = objectIdGenerator.generate().toString();
         course.setCourseId(courseId);
         course.setCourseFiles(new HashMap<>());
@@ -83,9 +86,9 @@ public class MongoRepository {
         return mongoTemplate.findAndRemove(query, Course.class, COURSE);
     }
 
-    public List<Course> readCourseByName(String courseName) {
+    public Course readCourseByName(String courseName) {
         Query query = new Query(Criteria.where("courseName").is(courseName));
-        return mongoTemplate.find(query, Course.class, COURSE);
+        return mongoTemplate.findOne(query, Course.class, COURSE);
     }
 
     public List<Course> readCourseAll() {
@@ -140,6 +143,8 @@ public class MongoRepository {
     }
 
     public Archive createArchive(Archive archive) {
+        if (readArchiveByName(archive.getArchiveName()) != null)
+            throw new DuplicateKeyException("");
         String parentId = archive.getParentId();
         Archive parentArchive = readArchiveById(parentId);
         if (!parentId.isEmpty() && parentArchive == null)
@@ -178,9 +183,9 @@ public class MongoRepository {
         if (archive == null)
             return null;
         for (Archive subArchive : archive.getSubArchives())
-            subArchive.setParentId(null);
+            subArchive.setParentId("");
         for (Course course : archive.getCourses())
-            course.setParentId(null);
+            course.setParentId("");
         archive.setSubArchives(new ArrayList<>());
         archive.setCourses(new ArrayList<>());
         return mongoTemplate.save(archive, ARCHIVE);
@@ -188,6 +193,11 @@ public class MongoRepository {
 
     public Archive readArchiveById(String archiveId) {
         return mongoTemplate.findById(archiveId, Archive.class, ARCHIVE);
+    }
+
+    public Archive readArchiveByName(String archiveName) {
+        Query query = new Query(Criteria.where("archiveName").is(archiveName));
+        return mongoTemplate.findOne(query, Archive.class, ARCHIVE);
     }
 
     public List<Archive> readArchiveByParent(String parentId) {
