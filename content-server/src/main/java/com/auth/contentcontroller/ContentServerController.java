@@ -80,7 +80,7 @@ public class ContentServerController {
 
     @GetMapping(path = "/archive")
     public ResponseEntity<Archive> archive(
-            @RequestParam(value = "archiveId", required = false) String archiveId) {
+            @RequestParam(value = "archive", required = false) String archiveId) {
 
         ServiceSegment info = contentService.getArchiveDetails(archiveId);
         return infoWrapper.wrap(info, Archive.class);
