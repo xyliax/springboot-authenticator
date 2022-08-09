@@ -201,15 +201,14 @@ public class consumerController {
     }
 
     /**
-     * @see ContentServerController#makeArchive(String, Archive)
+     * @see ContentServerController#makeArchive(Archive)
      */
     @PutMapping(path = "/content-server/archive")
     public ResponseEntity<Archive> createArchive(
-            @RequestParam(value = "parentId", required = false) String parentId,
             @RequestBody Archive archive) {
 
         String url = ServUrl.CONTENT.url + "/archive?parent={?}";
-        return restTemplate.postForEntity(url, archive, Archive.class, parentId);
+        return restTemplate.postForEntity(url, archive, Archive.class);
     }
 
     /**
