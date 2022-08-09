@@ -109,7 +109,7 @@ public class ContentService {
     public ServiceSegment getArchiveDetails(String archiveId) {
         try {
             Archive archive;
-            if (archiveId == null) {
+            if (archiveId.isEmpty()) {
                 archive = new Archive(null, "DEFAULT",
                         "default archive", null, null, null,
                         (ArrayList<Archive>) mongoRepository.readArchiveByParent(""),
