@@ -25,6 +25,8 @@ public class ContentService {
     public ServiceSegment createCourse(Course course) {
         try {
             Course newCourse = mongoRepository.createCourse(course);
+            if (newCourse == null)
+                return new ServiceSegment(Cause.NO_RESULT);
             return new ServiceSegment(newCourse);
         } catch (DuplicateKeyException duplicateKeyException) {
             return new ServiceSegment(Cause.DUP_NAME);

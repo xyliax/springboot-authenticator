@@ -199,6 +199,9 @@ public class consumerController {
         String url = ServUrl.CONTENT.url + "/file/delete?course={?}&file={?}";
         return restTemplate.postForEntity(url, null, CourseFile.class, courseId, fileId);
     }
+//
+//    @PutMapping(path = "/content-server/file/next-cloud")
+//    public ResponseEntity<CourseFile>
 
     /**
      * @see ContentServerController#makeArchive(Archive)

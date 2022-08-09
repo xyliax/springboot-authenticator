@@ -71,6 +71,8 @@ public class MongoRepository {
     public Course createCourse(Course course) {
         if (readCourseByName(course.getCourseName()) != null)
             throw new DuplicateKeyException("");
+        if (!course.getParentId().isEmpty() && readArchiveById(course.getParentId()) == null)
+            return null;
         String courseId = objectIdGenerator.generate().toString();
         course.setCourseId(courseId);
         course.setCourseFiles(new HashMap<>());
