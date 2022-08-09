@@ -207,7 +207,7 @@ public class consumerController {
     public ResponseEntity<Archive> createArchive(
             @RequestBody Archive archive) {
 
-        String url = ServUrl.CONTENT.url + "/archive?parent={?}";
+        String url = ServUrl.CONTENT.url + "/archive";
         return restTemplate.postForEntity(url, archive, Archive.class);
     }
 
