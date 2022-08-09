@@ -71,12 +71,16 @@ public class MongoRepository {
     public Course createCourse(Course course) {
         if (readCourseByName(course.getCourseName()) != null)
             throw new DuplicateKeyException("");
-        if (!course.getParentId().isEmpty() && readArchiveById(course.getParentId()) == null)
+        Archive archive = readArchiveById(course.getParentId());
+        if (!course.getParentId().isEmpty() && archive == null)
             return null;
         String courseId = objectIdGenerator.generate().toString();
         course.setCourseId(courseId);
         course.setCourseFiles(new HashMap<>());
-        return mongoTemplate.insert(course, COURSE);
+        Course courseSaved = mongoTemplate.insert(course, COURSE);
+        archive.addCourse(courseSaved);
+        updateArchive(archive);
+        return courseSaved;
     }
 
     public Course readCourseById(String courseId) {
