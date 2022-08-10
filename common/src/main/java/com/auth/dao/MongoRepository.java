@@ -179,6 +179,8 @@ public class MongoRepository {
                 parentArchive.addArchive(archiveT);
                 updateArchive(parentArchive);
                 archiveT = parentArchive;
+                if (parentArchive.getParentId() == null)
+                    break;
                 parentArchive = readArchiveById(parentArchive.getArchiveId());
             }
         }
