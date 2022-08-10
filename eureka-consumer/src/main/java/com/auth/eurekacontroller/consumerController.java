@@ -199,9 +199,22 @@ public class consumerController {
         String url = ServUrl.CONTENT.url + "/file/delete?course={?}&file={?}";
         return restTemplate.postForEntity(url, null, CourseFile.class, courseId, fileId);
     }
-//
-//    @PutMapping(path = "/content-server/file/next-cloud")
-//    public ResponseEntity<CourseFile>
+
+    @PutMapping(path = "/content-server/file/next-cloud")
+    public ResponseEntity<CourseFile> uploadFileNextCloud(
+            @RequestBody CourseFile courseFile) {
+
+        String url = ServUrl.CONTENT.url + "file/next-cloud";
+        return restTemplate.postForEntity(url, courseFile, CourseFile.class);
+    }
+
+    @DeleteMapping(path = "/content-server/file/next-cloud")
+    public ResponseEntity<CourseFile> deleteFileNextCloud(
+            @RequestParam("fileId") String fileId) {
+
+        String url = ServUrl.CONTENT.url + "file/next-cloud/delete?file={?}";
+        return restTemplate.postForEntity(url, null, CourseFile.class, fileId);
+    }
 
     /**
      * @see ContentServerController#makeArchive(Archive)

@@ -36,9 +36,9 @@ public class Archive {
         subArchives.add(archive);
     }
 
-    public void delArchive(String archiveId) {
+    public void delArchive(Archive archiveDel) {
         for (Archive archive : subArchives) {
-            if (archive.getArchiveId().equals(archiveId)) {
+            if (archive.getArchiveId().equals(archiveDel.getArchiveId())) {
                 subArchives.remove(archive);
                 return;
             }

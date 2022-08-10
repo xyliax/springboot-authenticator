@@ -180,6 +180,11 @@ public class MongoRepository {
             deleteArchiveById(subArchive.getArchiveId());
         for (Course course : archive.getCourses())
             deleteCourseById(course.getCourseId());
+        if (!archive.getParentId().isEmpty()) {
+            Archive parentArchive = readArchiveById(archive.getParentId());
+            parentArchive.delArchive(archive);
+            updateArchive(parentArchive);
+        }
         Query query = new Query(Criteria.where("_id").is(archiveId));
         return mongoTemplate.findAndRemove(query, Archive.class, ARCHIVE);
     }
