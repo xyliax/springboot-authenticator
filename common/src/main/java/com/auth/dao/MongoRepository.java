@@ -78,8 +78,17 @@ public class MongoRepository {
         course.setCourseId(courseId);
         course.setCourseFiles(new HashMap<>());
         Course courseSaved = mongoTemplate.insert(course, COURSE);
-        archive.addCourse(courseSaved);
-        updateArchive(archive);
+        if (archive != null) {
+            archive.addCourse(courseSaved);
+            updateArchive(archive);
+            Archive parentArchive = readArchiveById(archive.getParentId());
+            while (parentArchive != null) {
+                parentArchive.addArchive(archive);
+                updateArchive(parentArchive);
+                archive = parentArchive;
+                parentArchive = readArchiveById(archive.getParentId());
+            }
+        }
         return courseSaved;
     }
 
@@ -149,8 +158,11 @@ public class MongoRepository {
     }
 
     public Archive createArchive(Archive archive) {
-        if (readArchiveByName(archive.getArchiveName()) != null)
-            throw new DuplicateKeyException("");
+        List<Archive> archiveList = readArchiveByName(archive.getArchiveName());
+        archiveList.forEach(archive1 -> {
+            if (archive1.getParentId().equals(archive.getParentId()))
+                throw new DuplicateKeyException("");
+        });
         String parentId = archive.getParentId();
         Archive parentArchive = readArchiveById(parentId);
         if (!parentId.isEmpty() && parentArchive == null)
@@ -162,8 +174,13 @@ public class MongoRepository {
         archive.setParentId(parentId);
         Archive archiveSaved = mongoTemplate.insert(archive, ARCHIVE);
         if (!parentId.isEmpty()) {
-            parentArchive.addArchive(archive);
-            updateArchive(parentArchive);
+            Archive archiveT = archive;
+            while (parentArchive != null) {
+                parentArchive.addArchive(archiveT);
+                updateArchive(parentArchive);
+                archiveT = parentArchive;
+                parentArchive = readArchiveById(parentArchive.getArchiveId());
+            }
         }
         return archiveSaved;
     }
@@ -206,9 +223,9 @@ public class MongoRepository {
         return mongoTemplate.findById(archiveId, Archive.class, ARCHIVE);
     }
 
-    public Archive readArchiveByName(String archiveName) {
+    public List<Archive> readArchiveByName(String archiveName) {
         Query query = new Query(Criteria.where("archiveName").is(archiveName));
-        return mongoTemplate.findOne(query, Archive.class, ARCHIVE);
+        return mongoTemplate.find(query, Archive.class, ARCHIVE);
     }
 
     public List<Archive> readArchiveByParent(String parentId) {

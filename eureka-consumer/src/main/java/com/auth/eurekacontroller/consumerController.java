@@ -262,4 +262,15 @@ public class consumerController {
         String url = ServUrl.CONTENT.url + "/archive/edit?archive={?}";
         return restTemplate.postForEntity(url, idMap, Archive.class, archiveId);
     }
+
+    /**
+     * @see ContentServerController#archiveList(String)
+     */
+    @GetMapping(path = "/content-server/archive/user")
+    public ResponseEntity<Archive> getUserArchive(
+            @RequestParam("userId") String userId) {
+
+        String url = ServUrl.CONTENT.url + "/archive/user?user={?}";
+        return restTemplate.getForEntity(url, Archive.class, userId);
+    }
 }

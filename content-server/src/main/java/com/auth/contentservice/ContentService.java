@@ -6,12 +6,14 @@ import com.auth.defenum.Cause;
 import com.auth.model.Archive;
 import com.auth.model.Course;
 import com.auth.model.CourseFile;
+import com.auth.model.User;
 import com.auth.util.ServiceSegment;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -186,5 +188,47 @@ public class ContentService {
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }
+    }
+
+    public ServiceSegment archiveList(String userId) {
+        try {
+            Archive archive = new Archive(null, "DEFAULT",
+                    "default archive", null, null, null,
+                    (ArrayList<Archive>) mongoRepository.readArchiveByParent(""),
+                    (ArrayList<Course>) mongoRepository.readCourseByParent(""));
+
+            if ("*".equals(userId))
+                return new ServiceSegment(archive);
+            else {
+                User user = mongoRepository.readUserById(userId);
+                if (user == null)
+                    return new ServiceSegment(Cause.NO_RESULT);
+                List<Course> viewableCourses = mongoRepository.readCourseByUser(userId);
+                HashSet<String> viewableCourseId = new HashSet<>();
+                for (Course course : viewableCourses)
+                    viewableCourseId.add(course.getCourseId());
+                stripArchive(archive, null, viewableCourseId);
+                return new ServiceSegment(archive);
+            }
+        } catch (RuntimeException runtimeException) {
+            throw runtimeException;
+//            return new ServiceSegment(Cause.UNKNOWN);
+        }
+    }
+
+    private void stripArchive(Archive archive, Archive parent, HashSet<String> courseIds) {
+        for (Archive subArchive : archive.getSubArchives())
+            stripArchive(subArchive, archive, courseIds);
+        ArrayList<Course> courses = archive.getCourses();
+        ArrayList<Course> coursesRemove = new ArrayList<>();
+        courses.forEach(subCourse -> {
+            if (!courseIds.contains(subCourse.getCourseId()))
+                coursesRemove.add(subCourse);
+        });
+        courses.removeAll(coursesRemove);
+        archive.setCourses(courses);
+        if (archive.getSubArchives().isEmpty() && archive.getCourses().isEmpty())
+            if (parent != null)
+                parent.delArchive(archive);
     }
 }

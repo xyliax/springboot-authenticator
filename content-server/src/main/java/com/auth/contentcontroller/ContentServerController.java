@@ -103,4 +103,12 @@ public class ContentServerController {
         ServiceSegment info = contentService.archiveCourse(archiveId, idMapArray);
         return infoWrapper.wrap(info, Archive.class);
     }
+
+    @GetMapping(path = "/archive/user")
+    public ResponseEntity<Archive> archiveList(
+            @RequestParam("user") String userId) {
+
+        ServiceSegment info = contentService.archiveList(userId);
+        return infoWrapper.wrap(info, Archive.class);
+    }
 }
