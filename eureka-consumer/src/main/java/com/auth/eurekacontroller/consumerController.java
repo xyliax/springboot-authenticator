@@ -200,6 +200,9 @@ public class consumerController {
         return restTemplate.postForEntity(url, null, CourseFile.class, courseId, fileId);
     }
 
+    /**
+     * @see ContentServerController#uploadFileNextCloud(CourseFile)
+     */
     @PutMapping(path = "/content-server/file/next-cloud")
     public ResponseEntity<CourseFile> uploadFileNextCloud(
             @RequestBody CourseFile courseFile) {
@@ -208,11 +211,15 @@ public class consumerController {
         return restTemplate.postForEntity(url, courseFile, CourseFile.class);
     }
 
+    /**
+     * @see ContentServerController#deleteFileNextCloud(String, String)
+     */
     @DeleteMapping(path = "/content-server/file/next-cloud")
     public ResponseEntity<CourseFile> deleteFileNextCloud(
+            @RequestParam("courseId") String courseId,
             @RequestParam("fileId") String fileId) {
 
-        String url = ServUrl.CONTENT.url + "file/next-cloud/delete?file={?}";
+        String url = ServUrl.CONTENT.url + "file/next-cloud/delete?course={?}&file={?}";
         return restTemplate.postForEntity(url, null, CourseFile.class, fileId);
     }
 

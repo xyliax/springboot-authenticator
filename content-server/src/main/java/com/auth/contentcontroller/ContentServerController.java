@@ -66,7 +66,24 @@ public class ContentServerController {
             @RequestParam("course") String courseId,
             @RequestParam("file") String fileId) {
 
-        ServiceSegment info = contentService.deleteCourseFile(fileId, courseId);
+        ServiceSegment info = contentService.deleteCourseFile(fileId, courseId, true);
+        return infoWrapper.wrap(info, CourseFile.class);
+    }
+
+    @PostMapping(path = "/file/upload")
+    public ResponseEntity<CourseFile> uploadFileNextCloud(
+            @RequestBody CourseFile courseFile) {
+
+        ServiceSegment info = contentService.uploadCourseFile(courseFile);
+        return infoWrapper.wrap(info, CourseFile.class);
+    }
+
+    @PostMapping(path = "/file/delete")
+    public ResponseEntity<CourseFile> deleteFileNextCloud(
+            @RequestParam("course") String courseId,
+            @RequestParam("file") String fileId) {
+
+        ServiceSegment info = contentService.deleteCourseFile(fileId, courseId, false);
         return infoWrapper.wrap(info, CourseFile.class);
     }
 

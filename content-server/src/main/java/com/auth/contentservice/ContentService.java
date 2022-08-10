@@ -85,12 +85,13 @@ public class ContentService {
         }
     }
 
-    public ServiceSegment deleteCourseFile(String fileId, String courseId) {
+    public ServiceSegment deleteCourseFile(String fileId, String courseId, boolean local) {
         try {
             CourseFile courseFile = mongoRepository.deleteCourseFile(fileId, courseId);
             if (courseFile == null)
                 return new ServiceSegment(Cause.UNDEF_ARG);
-            localFileRepository.deleteCourseFile(courseFile);
+            if (local)
+                localFileRepository.deleteCourseFile(courseFile);
             return new ServiceSegment(courseFile);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
@@ -207,18 +208,25 @@ public class ContentService {
                 HashSet<String> viewableCourseId = new HashSet<>();
                 for (Course course : viewableCourses)
                     viewableCourseId.add(course.getCourseId());
-                stripArchive(archive, null, viewableCourseId);
+                stripArchive(archive, viewableCourseId);
                 return new ServiceSegment(archive);
             }
         } catch (RuntimeException runtimeException) {
-            throw runtimeException;
-//            return new ServiceSegment(Cause.UNKNOWN);
+            return new ServiceSegment(Cause.UNKNOWN);
         }
     }
 
-    private void stripArchive(Archive archive, Archive parent, HashSet<String> courseIds) {
-        for (Archive subArchive : archive.getSubArchives())
-            stripArchive(subArchive, archive, courseIds);
+    private void stripArchive(Archive archive, HashSet<String> courseIds) {
+        ArrayList<Archive> archives = archive.getSubArchives();
+        for (Archive subArchive : archives)
+            stripArchive(subArchive, courseIds);
+        ArrayList<Archive> archivesRemove = new ArrayList<>();
+        archives.forEach(subArchive -> {
+            if (subArchive.getSubArchives().isEmpty() && subArchive.getCourses().isEmpty())
+                archivesRemove.add(subArchive);
+        });
+        archives.removeAll(archivesRemove);
+        archive.setSubArchives(archives);
         ArrayList<Course> courses = archive.getCourses();
         ArrayList<Course> coursesRemove = new ArrayList<>();
         courses.forEach(subCourse -> {
@@ -227,8 +235,5 @@ public class ContentService {
         });
         courses.removeAll(coursesRemove);
         archive.setCourses(courses);
-        if (archive.getSubArchives().isEmpty() && archive.getCourses().isEmpty())
-            if (parent != null)
-                parent.delArchive(archive);
     }
 }

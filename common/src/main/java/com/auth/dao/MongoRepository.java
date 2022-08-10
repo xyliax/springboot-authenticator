@@ -174,14 +174,14 @@ public class MongoRepository {
         archive.setParentId(parentId);
         Archive archiveSaved = mongoTemplate.insert(archive, ARCHIVE);
         if (!parentId.isEmpty()) {
-            Archive archiveT = archive;
+            Archive archiveT = archiveSaved;
             while (parentArchive != null) {
                 parentArchive.addArchive(archiveT);
                 updateArchive(parentArchive);
                 archiveT = parentArchive;
                 if (parentArchive.getParentId() == null)
                     break;
-                parentArchive = readArchiveById(parentArchive.getArchiveId());
+                parentArchive = readArchiveById(parentArchive.getParentId());
             }
         }
         return archiveSaved;

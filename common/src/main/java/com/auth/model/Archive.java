@@ -30,8 +30,10 @@ public class Archive {
 
     public void addArchive(Archive archive) {
         for (Archive subArchive : subArchives) {
-            if (subArchive.getArchiveId().equals(archive.getArchiveId()))
-                return;
+            if (subArchive.getArchiveId().equals(archive.getArchiveId())) {
+                subArchives.remove(subArchive);
+                break;
+            }
         }
         subArchives.add(archive);
     }
@@ -47,8 +49,10 @@ public class Archive {
 
     public void addCourse(Course course) {
         for (Course subCourse : courses) {
-            if (subCourse.getCourseId().equals(course.getCourseId()))
-                return;
+            if (subCourse.getCourseId().equals(course.getCourseId())) {
+                courses.remove(subCourse);
+                break;
+            }
         }
         courses.add(course);
     }
