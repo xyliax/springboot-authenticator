@@ -37,8 +37,17 @@ public class LocalFileRepository {
         File file = new File(fileDir, newFileName);
         multipartFile.transferTo(file);
         String fileId = objectIdGenerator.generate().toString();
-        CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description, new Date().toString(), fileMappingPathPrefix + courseId + File.separator + newFileName, fileRealPath + courseId + File.separator + newFileName);
+        CourseFile courseFile = new CourseFile(fileId, courseId, fileName, description,
+                new Date().toString(), fileMappingPathPrefix + courseId + File.separator + newFileName,
+                fileRealPath + courseId + File.separator + newFileName);
         courseFile.setFileId(fileId);
+        return courseFile;
+    }
+
+    public CourseFile createCourseFileNextCloud(CourseFile courseFile) {
+        String fileId = objectIdGenerator.generate().toString();
+        courseFile.setFileId(fileId);
+        courseFile.setCreateDate(new Date().toString());
         return courseFile;
     }
 

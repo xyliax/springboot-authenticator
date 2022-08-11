@@ -76,6 +76,7 @@ public class ContentService {
 
     public ServiceSegment uploadCourseFile(CourseFile courseFile) {
         try {
+            courseFile = localFileRepository.createCourseFileNextCloud(courseFile);
             CourseFile courseFileSaved = mongoRepository.createCourseFile(courseFile);
             if (courseFileSaved == null)
                 return new ServiceSegment(Cause.UNDEF_ARG);
