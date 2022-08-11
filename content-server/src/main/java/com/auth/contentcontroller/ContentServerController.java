@@ -70,7 +70,7 @@ public class ContentServerController {
         return infoWrapper.wrap(info, CourseFile.class);
     }
 
-    @PostMapping(path = "/file/upload")
+    @PostMapping(path = "/file/upload/next-cloud")
     public ResponseEntity<CourseFile> uploadFileNextCloud(
             @RequestBody CourseFile courseFile) {
 
@@ -78,7 +78,7 @@ public class ContentServerController {
         return infoWrapper.wrap(info, CourseFile.class);
     }
 
-    @PostMapping(path = "/file/delete")
+    @PostMapping(path = "/file/delete/next-cloud")
     public ResponseEntity<CourseFile> deleteFileNextCloud(
             @RequestParam("course") String courseId,
             @RequestParam("file") String fileId) {
