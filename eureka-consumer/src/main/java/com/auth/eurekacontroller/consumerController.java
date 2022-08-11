@@ -207,7 +207,7 @@ public class consumerController {
     public ResponseEntity<CourseFile> uploadFileNextCloud(
             @RequestBody CourseFile courseFile) {
 
-        String url = ServUrl.CONTENT.url + "file/next-cloud";
+        String url = ServUrl.CONTENT.url + "file/upload/next-cloud";
         return restTemplate.postForEntity(url, courseFile, CourseFile.class);
     }
 
