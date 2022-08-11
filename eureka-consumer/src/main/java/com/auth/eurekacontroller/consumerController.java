@@ -219,7 +219,7 @@ public class consumerController {
             @RequestParam("courseId") String courseId,
             @RequestParam("fileId") String fileId) {
 
-        String url = ServUrl.CONTENT.url + "/file/next-cloud/delete?course={?}&file={?}";
+        String url = ServUrl.CONTENT.url + "/file/delete/next-cloud?course={?}&file={?}";
         return restTemplate.postForEntity(url, null, CourseFile.class, courseId, fileId);
     }
 
