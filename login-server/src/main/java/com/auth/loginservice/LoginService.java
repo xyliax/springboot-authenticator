@@ -17,15 +17,19 @@ public class LoginService {
 
     public ServiceSegment userRegister(User user, boolean register) {
         try {
+            User newUser;
             if (register) {
-                User newUser = mongoRepository.createUser(user);
-                return new ServiceSegment(newUser);
+                newUser = mongoRepository.createUser(user);
             } else {
-                User newUser = mongoRepository.updateUser(user);
+                User oldUser = mongoRepository.readUserById(user.getUserId());
+                user.setPublicKy(oldUser.getPublicKy());
+                user.setPermissions(oldUser.getPermissions());
+                user.setUserRole(oldUser.getUserRole());
+                newUser = mongoRepository.updateUser(user);
                 if (newUser == null)
                     return new ServiceSegment(Cause.DUP_NAME);
-                return new ServiceSegment(newUser);
             }
+            return new ServiceSegment(newUser);
         } catch (DuplicateKeyException duplicateKeyException) {
             return new ServiceSegment(Cause.DUP_NAME);
         } catch (RuntimeException runtimeException) {
