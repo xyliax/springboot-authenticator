@@ -1,7 +1,0 @@
-FROM openjdk:17
-
-ADD ./auth-server-0.0.1-SNAPSHOT-exec.jar auth-server-0.0.1-SNAPSHOT-exec.jar
-
-EXPOSE 8080
-
-ENTRYPOINT [ "java", "-jar", "login-server-0.0.1-SNAPSHOT-exec.jar" ]
