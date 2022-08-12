@@ -1,0 +1,32 @@
+version: "0.0.1"
+services:
+
+  eureka-server:
+    build: ./eureka-server
+    networks:
+      - auth-frontend
+
+  eureka-consumer:
+    build: ./eureka-consumer
+    ports:
+      - 8080:8080
+    networks:
+      - auth-frontend
+
+  login-server:
+    build: ./login-server
+    networks:
+      - auth-frontend
+
+  auth-server:
+    build: ./auth-server
+    networks:
+      - auth-frontend
+
+  content-server:
+    build: ./content-server
+    networks:
+      - auth-frontend
+
+networks:
+  auth-frontend:
