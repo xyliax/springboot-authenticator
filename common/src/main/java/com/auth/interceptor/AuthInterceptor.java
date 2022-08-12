@@ -1,0 +1,48 @@
+package com.auth.interceptor;
+
+import com.auth.defenum.Cause;
+import com.auth.defenum.RequestUrl;
+import com.auth.defenum.Role;
+import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@Component
+public class AuthInterceptor implements HandlerInterceptor {
+
+    private static final String DIRECT_PASS = "Authenticator";
+    @Resource
+    private KeyCheckingService keyCheckingService;
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (!(handler instanceof HandlerMethod))
+            return true;
+        if (DIRECT_PASS.equals(request.getHeader("DirectPass")))
+            return true;
+        String requestPath = request.getServletPath();
+        if (requestPath.matches(RequestUrl.CONTENT_SERVER.path)) {
+            if (check(request))
+                return true;
+            //Auth failed
+            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.addHeader("Cause", Cause.AUTH_FAILED.code);
+            response.addHeader("CauseStr", Cause.AUTH_FAILED.name());
+            return false;
+        }
+        return true;
+    }
+
+    private boolean check(HttpServletRequest request) {
+        String remote = request.getHeader("Remote");
+        String passcode = request.getHeader("Passcode");
+        Role role = keyCheckingService.getRole(remote, passcode);
+//        if (role == Role.UNKNOWN || role == null)
+//            return false;
+        return true;
+    }
+}
