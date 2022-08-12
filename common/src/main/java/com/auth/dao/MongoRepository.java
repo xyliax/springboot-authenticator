@@ -31,6 +31,8 @@ public class MongoRepository {
         String userId = objectIdGenerator.generate().toString();
         user.setUserId(userId);
         user.setPermissions(new HashMap<>());
+        if (readUserAll().isEmpty())
+            user.setUserRole(Role.ADMIN);
         return mongoTemplate.insert(user, USER);
     }
 
