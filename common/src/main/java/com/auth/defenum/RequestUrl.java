@@ -17,7 +17,8 @@ public enum RequestUrl {
         RequestUrl[] requestUrls = {LOGIN_SERVER, AUTH_SERVER, CONTENT_SERVER};
         StringBuilder stringBuilder = new StringBuilder();
         for (RequestUrl requestUrl : requestUrls)
-            stringBuilder.append(requestUrl).append("|");
+            stringBuilder.append(requestUrl.path).append("|");
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return stringBuilder.toString();
     }
 
