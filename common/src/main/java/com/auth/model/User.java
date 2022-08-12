@@ -28,6 +28,7 @@ public class User {
     private String password;
     private String encryptD;
     private Role userRole;
+    private String organization;
     private HashMap<Role, HashSet<String>> permissions;
 
     public void addPermission(Role role, String id) {

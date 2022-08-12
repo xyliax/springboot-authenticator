@@ -55,7 +55,6 @@ public class consumerController {
     }
 
     /**
-     * @apiNote user
      * @param type       access type. e.g, "username"
      * @param identifier access string. e.g, username
      * @see AuthServerController#user(String, String)

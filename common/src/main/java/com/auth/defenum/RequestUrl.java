@@ -4,8 +4,9 @@ public enum RequestUrl {
     LOGIN_SERVER("(/login-server/.*)|(/login/.*)"),
     AUTH_SERVER("(/auth-server/.*)|(/auth/.*)"),
     CONTENT_SERVER("(/content-server/.*)|(/content/.*)"),
-    USER_URL("(/content-server/archive/user)|(/content-server/course)|(/auth-server/user)"),
-    FREE_URL("(/login-server/login)");
+    REGISTER("(/login-server/user)"),
+    USER("(/content-server/archive/user)|(/content-server/course)"),
+    FREE("(/login-server/user)");
 
     public String path;
 

@@ -28,20 +28,29 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (requestPath.matches(RequestUrl.serverUrl())) {
             String remote = request.getHeader("Remote");
             String passcode = request.getHeader("Passcode");
+            if (requestPath.matches(RequestUrl.FREE.path)) {
+                if ("PUT".equals(request.getMethod())) {
+                    if ("#".equals(remote) && "#".equals(passcode))
+                        return true;
+                    response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                    response.addHeader("Cause", Cause.AUTH_FAILED.code);
+                    response.addHeader("CauseStr", Cause.AUTH_FAILED.name());
+                    return false;
+                }
+                return true;
+            }
             Role role = keyCheckingService.getRole(remote, passcode);
             if (role == null || role == Role.UNKNOWN || role == Role.UNDEFINED) {
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.addHeader("Cause", Cause.AUTH_FAILED.code);
                 response.addHeader("CauseStr", Cause.AUTH_FAILED.name());
                 return false;
-            } else if (requestPath.matches(RequestUrl.FREE_URL.path))
-                return true;
-            else if (role == Role.SUPERUSER)
+            } else if (role == Role.SUPERUSER)
                 return true;
             else if (role == Role.ADMIN)
                 return true;
             else if (role == Role.VISITOR) {
-                if (requestPath.matches(RequestUrl.USER_URL.path))
+                if (requestPath.matches(RequestUrl.USER.path))
                     return true;
                 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
                 response.addHeader("Cause", Cause.UNAUTHORIZED.code);
