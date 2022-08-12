@@ -1,7 +1,6 @@
 version: "0.0.1"
 services:
-
-  eureka-server:
+  eureka-centor-01:
     build: ./eureka-server
     ports:
       - 8761:8761
