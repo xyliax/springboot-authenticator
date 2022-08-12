@@ -7,6 +7,7 @@ public enum Cause {
     NO_RESULT("419"),
     MISMATCH("420"),
     UNDEF_ARG("421"),
+    UNAUTHORIZED("888"),
     AUTH_FAILED("999");
 
     public final String code;

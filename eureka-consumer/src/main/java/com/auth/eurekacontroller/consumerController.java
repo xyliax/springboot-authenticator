@@ -55,6 +55,7 @@ public class consumerController {
     }
 
     /**
+     * @apiNote user
      * @param type       access type. e.g, "username"
      * @param identifier access string. e.g, username
      * @see AuthServerController#user(String, String)
@@ -113,12 +114,6 @@ public class consumerController {
         return restTemplate.postForEntity(url, idMap, User.class, userId);
     }
 
-    // TODO: 4/8/2022 分发证书
-//    @PostMapping(path = "/auth-server/cert")
-//    public ResponseEntity<Cert> getCert() {
-//        return null;
-//    }
-
     /**
      * @see ContentServerController#register(Course)
      */
@@ -131,6 +126,7 @@ public class consumerController {
     }
 
     /**
+     * @apiNote user
      * @see ContentServerController#course(String)
      */
     @GetMapping(path = "/content-server/course")
@@ -271,6 +267,7 @@ public class consumerController {
     }
 
     /**
+     * @apiNote user
      * @see ContentServerController#archiveList(String)
      */
     @GetMapping(path = "/content-server/archive/user")

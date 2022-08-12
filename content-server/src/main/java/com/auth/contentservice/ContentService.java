@@ -198,20 +198,15 @@ public class ContentService {
                     "default archive", null, null, null,
                     (ArrayList<Archive>) mongoRepository.readArchiveByParent(""),
                     (ArrayList<Course>) mongoRepository.readCourseByParent(""));
-
-            if ("*".equals(userId))
-                return new ServiceSegment(archive);
-            else {
-                User user = mongoRepository.readUserById(userId);
-                if (user == null)
-                    return new ServiceSegment(Cause.NO_RESULT);
-                List<Course> viewableCourses = mongoRepository.readCourseByUser(userId);
-                HashSet<String> viewableCourseId = new HashSet<>();
-                for (Course course : viewableCourses)
-                    viewableCourseId.add(course.getCourseId());
-                stripArchive(archive, viewableCourseId);
-                return new ServiceSegment(archive);
-            }
+            User user = mongoRepository.readUserById(userId);
+            if (user == null)
+                return new ServiceSegment(Cause.NO_RESULT);
+            List<Course> viewableCourses = mongoRepository.readCourseByUser(userId);
+            HashSet<String> viewableCourseId = new HashSet<>();
+            for (Course course : viewableCourses)
+                viewableCourseId.add(course.getCourseId());
+            stripArchive(archive, viewableCourseId);
+            return new ServiceSegment(archive);
         } catch (RuntimeException runtimeException) {
             return new ServiceSegment(Cause.UNKNOWN);
         }

@@ -25,24 +25,30 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (DIRECT_PASS.equals(request.getHeader("DirectPass")))
             return true;
         String requestPath = request.getServletPath();
-        if (requestPath.matches(RequestUrl.CONTENT_SERVER.path)) {
-            if (check(request))
+        if (requestPath.matches(RequestUrl.serverUrl())) {
+            String remote = request.getHeader("Remote");
+            String passcode = request.getHeader("Passcode");
+            Role role = keyCheckingService.getRole(remote, passcode);
+            if (role == null || role == Role.UNKNOWN || role == Role.UNDEFINED) {
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.addHeader("Cause", Cause.AUTH_FAILED.code);
+                response.addHeader("CauseStr", Cause.AUTH_FAILED.name());
+                return false;
+            } else if (requestPath.matches(RequestUrl.FREE_URL.path))
                 return true;
-            //Auth failed
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            response.addHeader("Cause", Cause.AUTH_FAILED.code);
-            response.addHeader("CauseStr", Cause.AUTH_FAILED.name());
-            return false;
+            else if (role == Role.SUPERUSER)
+                return true;
+            else if (role == Role.ADMIN)
+                return true;
+            else if (role == Role.VISITOR) {
+                if (requestPath.matches(RequestUrl.USER_URL.path))
+                    return true;
+                response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+                response.addHeader("Cause", Cause.UNAUTHORIZED.code);
+                response.addHeader("CauseStr", Cause.UNAUTHORIZED.name());
+                return false;
+            }
         }
-        return true;
-    }
-
-    private boolean check(HttpServletRequest request) {
-        String remote = request.getHeader("Remote");
-        String passcode = request.getHeader("Passcode");
-        Role role = keyCheckingService.getRole(remote, passcode);
-//        if (role == Role.UNKNOWN || role == null)
-//            return false;
-        return true;
+        return false;
     }
 }

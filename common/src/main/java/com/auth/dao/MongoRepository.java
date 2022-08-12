@@ -69,8 +69,11 @@ public class MongoRepository {
 
     //Course
     public Course createCourse(Course course) {
-        if (readCourseByName(course.getCourseName()) != null)
-            throw new DuplicateKeyException("");
+        List<Course> courseList = readCourseByName(course.getCourseName());
+        courseList.forEach(course1 -> {
+            if (course1.getParentId().equals(course.getParentId()))
+                throw new DuplicateKeyException("");
+        });
         Archive archive = readArchiveById(course.getParentId());
         if (!course.getParentId().isEmpty() && archive == null)
             return null;
@@ -101,9 +104,9 @@ public class MongoRepository {
         return mongoTemplate.findAndRemove(query, Course.class, COURSE);
     }
 
-    public Course readCourseByName(String courseName) {
+    public List<Course> readCourseByName(String courseName) {
         Query query = new Query(Criteria.where("courseName").is(courseName));
-        return mongoTemplate.findOne(query, Course.class, COURSE);
+        return mongoTemplate.find(query, Course.class, COURSE);
     }
 
     public List<Course> readCourseAll() {
