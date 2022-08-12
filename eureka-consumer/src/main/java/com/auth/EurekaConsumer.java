@@ -1,6 +1,7 @@
 package com.auth;
 
 import com.auth.config.LoadBalancerConfig;
+import com.auth.interceptor.RestInterceptor;
 import com.auth.util.CauseErrorHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,12 +28,15 @@ public class EurekaConsumer {
 
     @Resource
     private CauseErrorHandler causeHandler;
+    @Resource
+    private RestInterceptor restInterceptor;
 
     @Bean
     @LoadBalanced
     RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(causeHandler);
+        restTemplate.getInterceptors().add(restInterceptor);
         return restTemplate;
     }
 }

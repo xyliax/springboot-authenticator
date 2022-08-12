@@ -6,7 +6,8 @@ public enum Cause {
     DUP_NAME("418"),
     NO_RESULT("419"),
     MISMATCH("420"),
-    UNDEF_ARG("421");
+    UNDEF_ARG("421"),
+    AUTH_FAILED("999");
 
     public final String code;
 
